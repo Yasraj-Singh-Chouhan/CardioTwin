@@ -20,11 +20,14 @@ import {
   Building2,
   Lock,
   ChevronDown,
+  Sun,
+  Moon,
 } from 'lucide-react';
 import { quickSearchPatients, getAlertsFeed, acknowledgeAlert } from '../api/client';
 import type { QuickSearchResult, ClinicalAlert } from '../api/types';
 import RiskBadge from './RiskBadge';
 import { useAudioTelemetry } from '../hooks/useAudioTelemetry';
+import { useTheme } from '../context/ThemeContext';
 
 interface TopBarProps {
   patientId?: string;
@@ -33,6 +36,7 @@ interface TopBarProps {
 export default function TopBar({ patientId: _patientId }: TopBarProps = {}) {
   const navigate = useNavigate();
   const { isMuted, toggleMute, triggerCardiacBeep } = useAudioTelemetry();
+  const { isDark, toggleTheme } = useTheme();
 
   // Search state
   const [searchQuery, setSearchQuery] = useState('');
@@ -201,17 +205,19 @@ export default function TopBar({ patientId: _patientId }: TopBarProps = {}) {
 
   return (
     <header
-      className="fixed top-0 left-64 right-0 h-16 z-40 flex items-center px-6 justify-between gap-4 border-b border-white/60 select-none"
+      className={`fixed top-0 left-64 right-0 h-16 z-40 flex items-center px-6 justify-between gap-4 border-b select-none transition-colors duration-300 ${
+        isDark
+          ? 'bg-[#0b111c]/85 border-white/[0.08] text-slate-100 shadow-[0_4px_30px_rgba(0,0,0,0.5)]'
+          : 'bg-white/72 border-white/60 text-[#111e1d] shadow-[0_4px_20px_-2px_rgba(11,42,60,0.04)]'
+      }`}
       style={{
-        background: 'rgba(255, 255, 255, 0.72)',
         backdropFilter: 'blur(28px) saturate(190%)',
-        boxShadow: '0 4px 20px -2px rgba(11,42,60,0.04), inset 0 1px 0 rgba(255,255,255,0.85)',
       }}
     >
       {/* Search Input with Autocomplete */}
       <div ref={searchContainerRef} className="relative flex-1 max-w-xl">
         <form onSubmit={handleSearchSubmit} className="relative flex items-center">
-          <div className="absolute left-3.5 pointer-events-none text-[#00666f]">
+          <div className={`absolute left-3.5 pointer-events-none ${isDark ? 'text-cyan-400' : 'text-[#00666f]'}`}>
             {isSearching ? <RefreshCw className="w-4 h-4 animate-spin" /> : <Search className="w-4 h-4" />}
           </div>
           <input
@@ -227,14 +233,11 @@ export default function TopBar({ patientId: _patientId }: TopBarProps = {}) {
             onKeyDown={(e) => {
               if (e.key === 'Escape') setShowSearchDropdown(false);
             }}
-            className="w-full pl-10 pr-20 py-2 rounded-xl text-[13px] focus:outline-none transition-all placeholder:text-[#3d494a]/50"
-            style={{
-              background: 'rgba(255, 255, 255, 0.90)',
-              boxShadow: 'inset 0 1px 2px rgba(11,42,60,0.04), 0 2px 6px rgba(11,42,60,0.02)',
-              fontFamily: 'Inter',
-              color: '#111e1d',
-              border: showSearchDropdown && searchQuery.trim() ? '1.5px solid #00666f' : '1px solid rgba(0, 102, 111, 0.12)',
-            }}
+            className={`w-full pl-10 pr-20 py-2 rounded-xl text-[13px] focus:outline-none transition-all ${
+              isDark
+                ? 'bg-[#0f192b]/90 border border-white/[0.08] text-white placeholder:text-slate-500 focus:border-cyan-400'
+                : 'bg-white/90 border border-[#00666f]/15 text-[#111e1d] placeholder:text-[#3d494a]/50 focus:border-[#00666f]'
+            }`}
             placeholder="Search patients by ID (e.g. CT-1001), name, or city..."
             type="text"
           />
@@ -360,6 +363,8 @@ export default function TopBar({ patientId: _patientId }: TopBarProps = {}) {
           className={`px-2.5 py-1.5 rounded-xl transition-all border flex items-center gap-1.5 shadow-2xs ${
             !isMuted
               ? 'bg-[#e0f1ef] border-[#00666f]/30 text-[#00666f]'
+              : isDark
+              ? 'bg-[#0f192b] border-white/10 text-slate-400 hover:text-white'
               : 'bg-white/80 border-gray-200 text-gray-500 hover:text-gray-900'
           }`}
           title={isMuted ? 'Turn Audio Telemetry Chime ON' : 'Mute Cardiac Telemetry'}
@@ -369,6 +374,20 @@ export default function TopBar({ patientId: _patientId }: TopBarProps = {}) {
           <span className="text-[10px] font-mono font-bold hidden sm:inline">
             {isMuted ? 'MUTED' : 'CHIME'}
           </span>
+        </button>
+
+        {/* Cyber Dark / Light Theme Toggle */}
+        <button
+          onClick={toggleTheme}
+          className={`p-2 rounded-xl transition-all border flex items-center justify-center shadow-xs ${
+            isDark
+              ? 'bg-[#0f192b] border-cyan-500/30 text-cyan-400 hover:bg-cyan-500/10 hover:border-cyan-400'
+              : 'bg-white/90 border-gray-200 text-amber-500 hover:bg-amber-50'
+          }`}
+          title={isDark ? 'Switch to Light Mode' : 'Switch to Cyber-Dark Mode'}
+          type="button"
+        >
+          {isDark ? <Sun className="w-4 h-4 text-cyan-300" /> : <Moon className="w-4 h-4 text-slate-700" />}
         </button>
 
         {/* Notification Bell with Active Alerts Drawer Popover */}

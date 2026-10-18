@@ -8,10 +8,15 @@ import {
   Sliders,
   ChevronRight,
   ShieldAlert,
+  Sun,
+  Moon,
 } from 'lucide-react';
 import { EcgOscilloscope } from '../components/EcgOscilloscope';
+import { useTheme } from '../context/ThemeContext';
 
 export default function LandingPage() {
+  const { isDark, toggleTheme } = useTheme();
+
   // Interactive In Silico Stiffening Simulator state on Hero
   const [cart, setCart] = useState(0.85); // Aortic compliance
   const [rp, setRp] = useState(1.35); // Systemic resistance
@@ -25,30 +30,39 @@ export default function LandingPage() {
 
   return (
     <div
-      className="min-h-screen relative overflow-x-hidden selection:bg-[#00666f] selection:text-white"
+      className={`min-h-screen relative overflow-x-hidden selection:bg-cyan-500 selection:text-white transition-colors duration-500 ${
+        isDark ? 'bg-[#080d16] text-[#e2f1ef]' : 'text-[#111e1d]'
+      }`}
       style={{
-        background: 'linear-gradient(135deg, #E8F7F5 0%, #D6EEF7 100%)',
+        background: isDark
+          ? 'radial-gradient(ellipse at 15% 15%, rgba(0, 242, 254, 0.08) 0%, transparent 45%), radial-gradient(ellipse at 85% 75%, rgba(255, 51, 102, 0.07) 0%, transparent 45%), #080d16'
+          : 'linear-gradient(135deg, #E8F7F5 0%, #D6EEF7 100%)',
         fontFamily: 'Inter, system-ui, sans-serif',
-        color: '#111e1d',
       }}
     >
       {/* Ambient Glow Blobs */}
       <div
-        className="absolute -top-24 left-1/4 w-[520px] h-[520px] rounded-full pointer-events-none opacity-40 blur-[120px]"
-        style={{ background: 'rgba(0,102,111,0.14)' }}
+        className={`absolute -top-24 left-1/4 w-[520px] h-[520px] rounded-full pointer-events-none blur-[120px] transition-opacity duration-700 ${
+          isDark ? 'opacity-25' : 'opacity-40'
+        }`}
+        style={{ background: isDark ? 'rgba(0, 242, 254, 0.35)' : 'rgba(0,102,111,0.14)' }}
       />
       <div
-        className="absolute top-1/3 -right-20 w-[580px] h-[580px] rounded-full pointer-events-none opacity-40 blur-[130px]"
-        style={{ background: 'rgba(207,229,251,0.45)' }}
+        className={`absolute top-1/3 -right-20 w-[580px] h-[580px] rounded-full pointer-events-none blur-[130px] transition-opacity duration-700 ${
+          isDark ? 'opacity-20' : 'opacity-40'
+        }`}
+        style={{ background: isDark ? 'rgba(255, 51, 102, 0.3)' : 'rgba(207,229,251,0.45)' }}
       />
 
       {/* Header */}
       <header
-        className="fixed top-0 left-0 right-0 z-50 h-20 flex items-center px-8 justify-between border-b border-white/60"
+        className={`fixed top-0 left-0 right-0 z-50 h-20 flex items-center px-8 justify-between border-b transition-colors duration-300 ${
+          isDark
+            ? 'bg-[#0b111c]/85 border-white/[0.08] text-white shadow-[0_4px_30px_rgba(0,0,0,0.5)]'
+            : 'bg-white/75 border-white/60 text-[#111e1d] shadow-[0_4px_20px_-2px_rgba(11,42,60,0.04)]'
+        }`}
         style={{
-          background: 'rgba(255,255,255,0.75)',
           backdropFilter: 'blur(28px) saturate(190%)',
-          boxShadow: '0 4px 20px -2px rgba(11,42,60,0.04), inset 0 1px 0 rgba(255,255,255,0.9)',
         }}
       >
         <div className="flex items-center gap-3">
@@ -119,18 +133,37 @@ export default function LandingPage() {
         </nav>
 
         <div className="flex items-center gap-3">
+          {/* Cyber Dark / Light Toggle */}
+          <button
+            onClick={toggleTheme}
+            className={`p-2.5 rounded-xl border transition-all flex items-center justify-center ${
+              isDark
+                ? 'bg-[#0f192b] border-cyan-500/30 text-cyan-400 hover:bg-cyan-500/10 hover:border-cyan-400'
+                : 'bg-white/90 border-gray-200 text-amber-500 hover:bg-amber-50'
+            }`}
+            title={isDark ? 'Switch to Light Mode' : 'Switch to Cyber-Dark Mode'}
+            type="button"
+          >
+            {isDark ? <Sun className="w-4 h-4 text-cyan-300" /> : <Moon className="w-4 h-4 text-slate-700" />}
+          </button>
+
           <Link
             to="/patients/CT-3092"
-            className="hidden sm:inline-flex items-center justify-center px-4 py-2 rounded-xl text-[13px] font-semibold text-[#00666f] bg-white hover:bg-[#eaf4f3] border border-[#00666f]/20 transition-all shadow-2xs"
+            className={`hidden sm:inline-flex items-center justify-center px-4 py-2 rounded-xl text-[13px] font-semibold border transition-all ${
+              isDark
+                ? 'bg-[#0f192b] border-white/10 text-cyan-300 hover:border-cyan-400/40'
+                : 'bg-white hover:bg-[#eaf4f3] text-[#00666f] border-[#00666f]/20 shadow-2xs'
+            }`}
           >
             Sample Twin (CT-3092)
           </Link>
           <Link
             to="/roster"
-            className="inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl font-bold text-[13px] text-white hover:brightness-110 active:scale-95 transition-all shadow-sm"
+            className="inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl font-bold text-[13px] text-white hover:brightness-110 active:scale-95 transition-all shadow-lg"
             style={{
-              background: 'linear-gradient(135deg, #00666f 0%, #00818c 100%)',
-              boxShadow: '0 4px 16px rgba(14,154,167,0.30)',
+              background: isDark ? 'linear-gradient(135deg, #00F2FE 0%, #4FACFE 100%)' : 'linear-gradient(135deg, #00666f 0%, #00818c 100%)',
+              color: isDark ? '#080d16' : '#fff',
+              boxShadow: isDark ? '0 4px 20px rgba(0,242,254,0.35)' : '0 4px 16px rgba(14,154,167,0.30)',
             }}
           >
             <span>Open CCU Dashboard</span>

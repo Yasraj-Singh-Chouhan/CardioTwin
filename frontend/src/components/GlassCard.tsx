@@ -1,4 +1,5 @@
 import React from 'react';
+import { useTheme } from '../context/ThemeContext';
 
 interface GlassCardProps {
   children: React.ReactNode;
@@ -12,19 +13,21 @@ export default function GlassCard({
   children,
   className = '',
   style,
-  radius = 24,
+  radius = 20,
   hoverable = false,
 }: GlassCardProps) {
+  const { isDark } = useTheme();
+
   return (
     <div
-      className={`${className} ${hoverable ? 'hover:-translate-y-0.5 hover:shadow-lg transition-all duration-200' : ''}`}
+      className={`relative backdrop-blur-xl transition-all duration-300 ${
+        hoverable ? 'hover:-translate-y-1 hover:shadow-2xl cursor-pointer' : ''
+      } ${
+        isDark
+          ? 'bg-[#0e1626]/75 border border-white/[0.08] text-[#e2f1ef] shadow-[0_16px_48px_-8px_rgba(0,0,0,0.65),inset_0_1px_1px_rgba(255,255,255,0.08)] hover:border-cyan-400/30'
+          : 'bg-white/75 border border-white/85 text-[#111e1d] shadow-[0_12px_40px_-6px_rgba(11,42,60,0.06),inset_0_1px_2px_rgba(255,255,255,0.95)]'
+      } ${className}`}
       style={{
-        background: 'rgba(255, 255, 255, 0.68)',
-        backdropFilter: 'blur(28px) saturate(190%)',
-        WebkitBackdropFilter: 'blur(28px) saturate(190%)',
-        border: '1px solid rgba(255, 255, 255, 0.82)',
-        boxShadow:
-          'inset 0 1px 1px 0 rgba(255, 255, 255, 0.9), 0 10px 32px -4px rgba(11, 42, 60, 0.05), 0 2px 8px -2px rgba(11, 42, 60, 0.03)',
         borderRadius: `${radius}px`,
         ...style,
       }}

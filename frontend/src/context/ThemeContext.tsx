@@ -10,24 +10,31 @@ interface ThemeContextType {
 }
 
 const ThemeContext = createContext<ThemeContextType>({
-  theme: 'light',
-  isDark: false,
+  theme: 'dark',
+  isDark: true,
   toggleTheme: () => {},
   setTheme: () => {},
 });
 
 export function ThemeProvider({ children }: { children: React.ReactNode }) {
   const [theme, setThemeState] = useState<Theme>(() => {
-    // Default to the user's original light medical glass theme
-    return 'light';
+    const saved = localStorage.getItem('cardiotwin-theme');
+    if (saved === 'light' || saved === 'dark') return saved;
+    return 'dark'; // Default to ultra-luxurious dark clinical obsidian mode
   });
 
   useEffect(() => {
-    localStorage.setItem('cardiotwin-theme', 'light');
+    localStorage.setItem('cardiotwin-theme', theme);
     const root = document.documentElement;
-    root.classList.remove('dark');
-    root.setAttribute('data-theme', 'light');
-    root.style.colorScheme = 'light';
+    if (theme === 'dark') {
+      root.classList.add('dark');
+      root.setAttribute('data-theme', 'dark');
+      root.style.colorScheme = 'dark';
+    } else {
+      root.classList.remove('dark');
+      root.setAttribute('data-theme', 'light');
+      root.style.colorScheme = 'light';
+    }
   }, [theme]);
 
   const toggleTheme = () => {
