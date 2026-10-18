@@ -1,0 +1,35 @@
+{
+  "patient_id": "CT-3092",
+  "alerts": [
+    {
+      "id": "alt-8891",
+      "patient_id": "CT-3092",
+      "timestamp": "2026-10-16T18:48:00Z",
+      "tier": "CRITICAL",
+      "stage_label": "Stage 3 Crisis Risk",
+      "primary_concern": "Crisis-range BP episode",
+      "crisis_prob_6h": 84.0,
+      "crisis_prob_12h": 92.0,
+      "warning_window_hours": 4.8,
+      "eta_to_threshold": "T+4.8h",
+      "trigger_summary": "Simulated systolic trajectory breach (forecast peak 184 mmHg) driven by 36h missed Amlodipine dose and PM2.5 surge",
+      "recommended_action": "Immediate clinical alert. Verify medication adherence and initiate telemetry triage.",
+      "status": "ACTIVE"
+    },
+    {
+      "id": "alt-8842",
+      "patient_id": "CT-3092",
+      "timestamp": "2026-10-16T14:15:00Z",
+      "tier": "HIGH",
+      "stage_label": "Stage 2 Acute Horizon",
+      "primary_concern": "Elevated Autonomic Tone & Drift",
+      "crisis_prob_6h": 42.0,
+      "crisis_prob_12h": 58.0,
+      "warning_window_hours": 8.2,
+      "eta_to_threshold": "T+8.2h",
+      "trigger_summary": "TDI crossed 40-point nominal threshold with nocturnal HRV RMSSD falling below 20ms",
+      "recommended_action": "Contact patient to confirm medication intake and schedule evening telemetry review.",
+      "status": "ACKNOWLEDGED"
+    }
+  ]
+}

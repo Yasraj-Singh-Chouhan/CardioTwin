@@ -1,0 +1,322 @@
+@import "tailwindcss";
+
+@theme {
+  /* Colors */
+  --color-primary: #00666f;
+  --color-on-primary: #ffffff;
+  --color-primary-container: #00818c;
+  --color-on-primary-container: #f6feff;
+  --color-primary-fixed: #8df2ff;
+  --color-primary-fixed-dim: #67d6e4;
+  --color-inverse-primary: #67d6e4;
+  --color-secondary: #4c6173;
+  --color-on-secondary: #ffffff;
+  --color-secondary-container: #cce2f8;
+  --color-on-secondary-container: #506578;
+  --color-secondary-fixed: #cfe5fb;
+  --color-secondary-fixed-dim: #b3c9de;
+  --color-tertiary: #445f73;
+  --color-on-tertiary: #ffffff;
+  --color-tertiary-container: #5c788d;
+  --color-on-tertiary-container: #fcfcff;
+  --color-tertiary-fixed: #c9e6fe;
+  --color-tertiary-fixed-dim: #aecae1;
+  --color-error: #ba1a1a;
+  --color-on-error: #ffffff;
+  --color-error-container: #ffdad6;
+  --color-on-error-container: #93000a;
+  --color-surface: #edfcfa;
+  --color-surface-dim: #cedddb;
+  --color-surface-bright: #edfcfa;
+  --color-surface-container-lowest: #ffffff;
+  --color-surface-container-low: #e8f7f5;
+  --color-surface-container: #e2f1ef;
+  --color-surface-container-high: #dcebe9;
+  --color-surface-container-highest: #d7e6e4;
+  --color-on-surface: #111e1d;
+  --color-on-surface-variant: #3d494a;
+  --color-inverse-surface: #263332;
+  --color-inverse-on-surface: #e5f4f2;
+  --color-outline: #6d797b;
+  --color-outline-variant: #bcc9cb;
+  --color-surface-variant: #d7e6e4;
+  --color-surface-tint: #006972;
+  --color-background: #edfcfa;
+  --color-on-background: #111e1d;
+  --color-on-primary-fixed: #001f23;
+  --color-on-primary-fixed-variant: #004f56;
+  --color-on-secondary-fixed: #061d2d;
+  --color-on-secondary-fixed-variant: #34495b;
+  --color-on-tertiary-fixed: #001e2f;
+  --color-on-tertiary-fixed-variant: #2e4a5d;
+
+  /* Border radius */
+  --radius-sm: 0.375rem;
+  --radius-DEFAULT: 0.625rem;
+  --radius-md: 0.875rem;
+  --radius-lg: 1.125rem;
+  --radius-xl: 1.5rem;
+  --radius-2xl: 1.75rem;
+  --radius-full: 9999px;
+
+  /* Spacing tokens */
+  --spacing-space-xs: 0.25rem;
+  --spacing-space-sm: 0.5rem;
+  --spacing-space-md: 1rem;
+  --spacing-space-lg: 1.5rem;
+  --spacing-space-xl: 2.5rem;
+  --spacing-gutter: 1.5rem;
+  --spacing-gutter-mobile: 1rem;
+  --spacing-margin: 2rem;
+  --spacing-margin-mobile: 1rem;
+
+  /* Font families */
+  --font-sans: Inter, system-ui, -apple-system, sans-serif;
+  --font-display: "Plus Jakarta Sans", system-ui, -apple-system, sans-serif;
+}
+
+/* Material Symbols safety fallback */
+.material-symbols-outlined {
+  font-family: 'Material Symbols Outlined', sans-serif;
+  font-weight: normal;
+  font-style: normal;
+  font-size: 24px;
+  line-height: 1;
+  letter-spacing: normal;
+  text-transform: none;
+  display: inline-block;
+  white-space: nowrap;
+  word-wrap: normal;
+  direction: ltr;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Luxury Glassmorphic & Medical Depth Utilities - Light Mode */
+.glass {
+  background: rgba(255, 255, 255, 0.72);
+  backdrop-filter: blur(24px) saturate(190%);
+  -webkit-backdrop-filter: blur(24px) saturate(190%);
+  border: 1px solid rgba(255, 255, 255, 0.85);
+  box-shadow: 
+    inset 0 1px 1px 0 rgba(255, 255, 255, 0.90),
+    0 10px 36px -4px rgba(11, 42, 60, 0.05),
+    0 2px 8px -2px rgba(11, 42, 60, 0.03);
+}
+
+.glass-card {
+  background: rgba(255, 255, 255, 0.75);
+  backdrop-filter: blur(24px) saturate(190%);
+  -webkit-backdrop-filter: blur(24px) saturate(190%);
+  border: 1px solid rgba(255, 255, 255, 0.85);
+  box-shadow: 
+    inset 0 1px 2px 0 rgba(255, 255, 255, 0.95),
+    0 12px 40px -6px rgba(11, 42, 60, 0.06),
+    0 4px 12px -2px rgba(11, 42, 60, 0.03);
+  transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.25s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.25s ease;
+}
+
+.glass-card:hover {
+  border-color: rgba(0, 102, 111, 0.28);
+  box-shadow: 
+    inset 0 1px 2px 0 rgba(255, 255, 255, 1),
+    0 20px 48px -8px rgba(11, 42, 60, 0.10),
+    0 6px 16px -2px rgba(11, 42, 60, 0.05);
+}
+
+.glass-strong {
+  background: rgba(255, 255, 255, 0.90);
+  backdrop-filter: blur(28px) saturate(200%);
+  -webkit-backdrop-filter: blur(28px) saturate(200%);
+  border: 1px solid rgba(255, 255, 255, 0.95);
+  box-shadow: 
+    inset 0 1px 2px 0 rgba(255, 255, 255, 1),
+    0 24px 56px -12px rgba(11, 42, 60, 0.12),
+    0 4px 16px -2px rgba(11, 42, 60, 0.04);
+}
+
+/* ========================================================= */
+/* ULTRA-LUXURY CYBER-CLINICAL DARK COMMAND CENTER OVERRIDES */
+/* ========================================================= */
+.dark html,
+.dark body,
+.dark #root {
+  background-color: #060b11 !important;
+  color: #f1f8fa !important;
+}
+
+.dark .glass {
+  background: rgba(11, 20, 29, 0.78);
+  backdrop-filter: blur(28px) saturate(190%);
+  -webkit-backdrop-filter: blur(28px) saturate(190%);
+  border: 1px solid rgba(0, 245, 212, 0.15);
+  box-shadow: 
+    inset 0 1px 1px 0 rgba(255, 255, 255, 0.08),
+    0 12px 40px -4px rgba(0, 0, 0, 0.65),
+    0 2px 8px -2px rgba(0, 0, 0, 0.4);
+}
+
+.dark .glass-card {
+  background: rgba(13, 24, 36, 0.82);
+  backdrop-filter: blur(28px) saturate(190%);
+  -webkit-backdrop-filter: blur(28px) saturate(190%);
+  border: 1px solid rgba(0, 245, 212, 0.20);
+  box-shadow: 
+    inset 0 1px 1px 0 rgba(255, 255, 255, 0.10),
+    0 16px 48px -6px rgba(0, 0, 0, 0.75),
+    0 4px 12px -2px rgba(0, 0, 0, 0.5);
+  color: #e2f1ef;
+}
+
+.dark .glass-card:hover {
+  border-color: rgba(0, 245, 212, 0.45);
+  box-shadow: 
+    inset 0 1px 2px 0 rgba(0, 245, 212, 0.25),
+    0 22px 56px -8px rgba(0, 245, 212, 0.18),
+    0 6px 16px -2px rgba(0, 0, 0, 0.6);
+}
+
+.dark .glass-strong {
+  background: rgba(16, 29, 44, 0.94);
+  backdrop-filter: blur(32px) saturate(210%);
+  -webkit-backdrop-filter: blur(32px) saturate(210%);
+  border: 1px solid rgba(0, 245, 212, 0.30);
+  box-shadow: 
+    inset 0 1px 2px 0 rgba(255, 255, 255, 0.15),
+    0 24px 64px -12px rgba(0, 0, 0, 0.85);
+  color: #f1f8fa;
+}
+
+/* Tactical Sci-Fi Laser Grid Background */
+.laser-grid {
+  background-size: 32px 32px;
+  background-image: 
+    linear-gradient(to right, rgba(0, 245, 212, 0.035) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(0, 245, 212, 0.035) 1px, transparent 1px);
+}
+
+.laser-grid-light {
+  background-size: 32px 32px;
+  background-image: 
+    linear-gradient(to right, rgba(0, 102, 111, 0.04) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(0, 102, 111, 0.04) 1px, transparent 1px);
+}
+
+/* Neon Glow Utilities */
+.neon-glow-teal {
+  text-shadow: 0 0 12px rgba(0, 245, 212, 0.65), 0 0 24px rgba(0, 245, 212, 0.35);
+}
+
+.neon-glow-red {
+  text-shadow: 0 0 12px rgba(255, 42, 109, 0.7), 0 0 24px rgba(255, 42, 109, 0.4);
+}
+
+.neon-glow-amber {
+  text-shadow: 0 0 12px rgba(245, 158, 11, 0.7), 0 0 24px rgba(245, 158, 11, 0.35);
+}
+
+/* Medical Pulse Glows */
+.pulse-glow-teal {
+  box-shadow: 0 0 0 0 rgba(0, 245, 212, 0.5);
+  animation: pulse-teal 2s infinite cubic-bezier(0.66, 0, 0, 1);
+}
+
+@keyframes pulse-teal {
+  to {
+    box-shadow: 0 0 0 12px rgba(0, 245, 212, 0);
+  }
+}
+
+.pulse-glow-red {
+  box-shadow: 0 0 0 0 rgba(255, 42, 109, 0.6);
+  animation: pulse-red 1.8s infinite cubic-bezier(0.66, 0, 0, 1);
+}
+
+@keyframes pulse-red {
+  to {
+    box-shadow: 0 0 0 14px rgba(255, 42, 109, 0);
+  }
+}
+
+/* Tactical Corner Brackets (HUD overlay) */
+.hud-corner {
+  position: relative;
+}
+.hud-corner::before,
+.hud-corner::after {
+  content: '';
+  position: absolute;
+  width: 8px;
+  height: 8px;
+  pointer-events: none;
+}
+.hud-corner::before {
+  top: 0;
+  left: 0;
+  border-top: 2px solid rgba(0, 245, 212, 0.6);
+  border-left: 2px solid rgba(0, 245, 212, 0.6);
+}
+.hud-corner::after {
+  bottom: 0;
+  right: 0;
+  border-bottom: 2px solid rgba(0, 245, 212, 0.6);
+  border-right: 2px solid rgba(0, 245, 212, 0.6);
+}
+
+/* Subtle Shimmer for High-Priority Alerts & Badges */
+@keyframes shimmer {
+  0% { transform: translateX(-100%); }
+  100% { transform: translateX(100%); }
+}
+
+.shimmer-badge {
+  position: relative;
+  overflow: hidden;
+}
+
+.shimmer-badge::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent);
+  animation: shimmer 2.5s infinite;
+}
+
+/* Tabular nums for medical telemetry */
+.tabular-nums {
+  font-variant-numeric: tabular-nums;
+  font-feature-settings: "tnum" 1, "cv05" 1;
+}
+
+/* Smooth custom scrollbars */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: rgba(0, 102, 111, 0.03);
+  border-radius: 9999px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(0, 102, 111, 0.20);
+  border-radius: 9999px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(0, 102, 111, 0.40);
+}
+
+html, body, #root {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  background-color: #edfcfa;
+  font-family: var(--font-sans);
+  color: #111e1d;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}

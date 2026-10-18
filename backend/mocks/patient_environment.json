@@ -1,0 +1,39 @@
+{
+  "patient_id": "CT-3092",
+  "current_environment": {
+    "city": "Delhi NCR",
+    "aqi": 382,
+    "aqi_category": "Very Poor",
+    "pm25_ug_m3": 284.0,
+    "temperature_c": 14.2,
+    "humidity_percent": 68.0,
+    "heat_wave_flag": false,
+    "festival_flag": "Diwali window / Winter smog peak",
+    "station_name": "CPCB Central Delhi Station"
+  },
+  "recent_forecast": [
+    {
+      "city": "Delhi NCR",
+      "aqi": 320,
+      "aqi_category": "Very Poor",
+      "pm25_ug_m3": 210.0,
+      "temperature_c": 16.0,
+      "humidity_percent": 62.0,
+      "heat_wave_flag": false,
+      "festival_flag": null,
+      "station_name": "CPCB Central Delhi Station"
+    },
+    {
+      "city": "Delhi NCR",
+      "aqi": 382,
+      "aqi_category": "Very Poor",
+      "pm25_ug_m3": 284.0,
+      "temperature_c": 14.2,
+      "humidity_percent": 68.0,
+      "heat_wave_flag": false,
+      "festival_flag": "Diwali window / Winter smog peak",
+      "station_name": "CPCB Central Delhi Station"
+    }
+  ],
+  "biophysical_impact_summary": "Triggered by nocturnal sympathetic surge coupled with acute environmental PM2.5 elevation (284 µg/m³, Delhi sensor station). High AQI promotes microvascular constriction and elevated peripheral vascular tone."
+}

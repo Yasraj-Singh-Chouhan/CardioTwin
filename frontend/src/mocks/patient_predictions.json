@@ -1,0 +1,106 @@
+{
+  "patient_id": "CT-3092",
+  "event_name": "crisis-range BP episode",
+  "recorded_current_bp": "154/98 mmHg",
+  "crisis_prob_6h": 31.0,
+  "crisis_prob_12h": 48.0,
+  "crisis_eta_hours": 5.4,
+  "forecast_peak_sbp": 184.0,
+  "forecast_peak_dbp": 112.0,
+  "forecast_peak_eta_text": "Forecast Peak: 184/112 mmHg @ T+5.4h",
+  "crisis_threshold_sbp": 180.0,
+  "crisis_threshold_dbp": 120.0,
+  "rhythm_irregularity_detected": false,
+  "rhythm_irregularity_label": "Sinus rhythm / normal autonomic modulation (detection only)",
+  "trajectory": [
+    {
+      "offset_hours": -12.0,
+      "timestamp": "2026-10-16T06:50:00Z",
+      "is_forecast": false,
+      "observed_sbp": 138.0,
+      "observed_dbp": 86.0,
+      "predicted_sbp": 136.0,
+      "predicted_dbp": 85.0,
+      "upper_envelope_sbp": null,
+      "lower_envelope_sbp": null
+    },
+    {
+      "offset_hours": -6.0,
+      "timestamp": "2026-10-16T12:50:00Z",
+      "is_forecast": false,
+      "observed_sbp": 144.0,
+      "observed_dbp": 92.0,
+      "predicted_sbp": 142.0,
+      "predicted_dbp": 90.0,
+      "upper_envelope_sbp": null,
+      "lower_envelope_sbp": null
+    },
+    {
+      "offset_hours": -2.0,
+      "timestamp": "2026-10-16T16:50:00Z",
+      "is_forecast": false,
+      "observed_sbp": 150.0,
+      "observed_dbp": 95.0,
+      "predicted_sbp": 149.0,
+      "predicted_dbp": 94.0,
+      "upper_envelope_sbp": null,
+      "lower_envelope_sbp": null
+    },
+    {
+      "offset_hours": 0.0,
+      "timestamp": "2026-10-16T18:50:00Z",
+      "is_forecast": false,
+      "observed_sbp": 154.0,
+      "observed_dbp": 98.0,
+      "predicted_sbp": 154.0,
+      "predicted_dbp": 98.0,
+      "upper_envelope_sbp": 154.0,
+      "lower_envelope_sbp": 154.0
+    },
+    {
+      "offset_hours": 2.0,
+      "timestamp": "2026-10-16T20:50:00Z",
+      "is_forecast": true,
+      "observed_sbp": null,
+      "observed_dbp": null,
+      "predicted_sbp": 164.0,
+      "predicted_dbp": 102.0,
+      "upper_envelope_sbp": 172.0,
+      "lower_envelope_sbp": 156.0
+    },
+    {
+      "offset_hours": 5.4,
+      "timestamp": "2026-10-17T00:14:00Z",
+      "is_forecast": true,
+      "observed_sbp": null,
+      "observed_dbp": null,
+      "predicted_sbp": 178.0,
+      "predicted_dbp": 108.0,
+      "upper_envelope_sbp": 184.0,
+      "lower_envelope_sbp": 168.0
+    },
+    {
+      "offset_hours": 6.0,
+      "timestamp": "2026-10-17T00:50:00Z",
+      "is_forecast": true,
+      "observed_sbp": null,
+      "observed_dbp": null,
+      "predicted_sbp": 176.0,
+      "predicted_dbp": 106.0,
+      "upper_envelope_sbp": 183.0,
+      "lower_envelope_sbp": 165.0
+    },
+    {
+      "offset_hours": 12.0,
+      "timestamp": "2026-10-17T06:50:00Z",
+      "is_forecast": true,
+      "observed_sbp": null,
+      "observed_dbp": null,
+      "predicted_sbp": 162.0,
+      "predicted_dbp": 98.0,
+      "upper_envelope_sbp": 174.0,
+      "lower_envelope_sbp": 150.0
+    }
+  ],
+  "disclaimer": "Evaluated on a semi-synthetic cohort with held-out patients; not clinically validated. Hero event is crisis-range BP episode, not a medical diagnosis."
+}

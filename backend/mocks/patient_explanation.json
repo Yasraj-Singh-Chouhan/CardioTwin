@@ -1,0 +1,83 @@
+{
+  "patient_id": "CT-3092",
+  "primary_alert_level": "Stage 3 Crisis Risk · Within 6h: 31% / 12h: 48%",
+  "biophysical_synthesis": "A 36-hour missed medication interval combined with acute nocturnal PM2.5 exposure triggered systemic peripheral vasoconstriction, causing simulated systolic pressure to breach the 180 mmHg safety margin by T+5.4h.",
+  "simulation_confidence_percent": 94.2,
+  "windkessel_biofit_label": "Windkessel Bio-fit Nominal (ΔTDI 0.14)",
+  "pathway_nature": "Non-causal associative pathway derivation",
+  "cascade_nodes": [
+    {
+      "node_index": 1,
+      "node_tag": "Node 01 · Ingestion Lapse",
+      "title": "Missed Doses",
+      "subtitle": "Amlodipine 5mg omitted",
+      "metric_label": "Cumulative Interval",
+      "metric_value": "~36h lapse",
+      "phase_label": "Wash-out phase",
+      "icon_name": "medication_liquid"
+    },
+    {
+      "node_index": 2,
+      "node_tag": "Node 02 · Hemodynamic Drift",
+      "title": "Vascular Tone Rise",
+      "subtitle": "Peripheral resistance Rp rises",
+      "metric_label": "Resistance Shift",
+      "metric_value": "Rp +28% (1.32)",
+      "phase_label": "Vasoconstriction",
+      "icon_name": "compress"
+    },
+    {
+      "node_index": 3,
+      "node_tag": "Node 03 · Autonomic Shift",
+      "title": "Sympathetic Surge",
+      "subtitle": "Nocturnal parasympathetic uncoupling",
+      "metric_label": "HRV RMSSD",
+      "metric_value": "18ms (LF/HF 2.8)",
+      "phase_label": "Autonomic drift",
+      "icon_name": "ecg"
+    },
+    {
+      "node_index": 4,
+      "node_tag": "Node 04 · Threshold Crossing",
+      "title": "Safety Margin Breach",
+      "subtitle": "Crisis-range BP episode reached",
+      "metric_label": "Forecast Peak",
+      "metric_value": "184/112 @ T+5.4h",
+      "phase_label": "Episode horizon",
+      "icon_name": "crisis_alert"
+    }
+  ],
+  "shap_contributions": [
+    {
+      "feature_name": "Missed Amlodipine Interval (36h)",
+      "contribution_value": 0.32,
+      "direction": "increases_risk",
+      "category": "Medication"
+    },
+    {
+      "feature_name": "Ambient PM2.5 (284 µg/m³)",
+      "contribution_value": 0.24,
+      "direction": "increases_risk",
+      "category": "Environment"
+    },
+    {
+      "feature_name": "Nocturnal HRV Drop (RMSSD 18ms)",
+      "contribution_value": 0.18,
+      "direction": "increases_risk",
+      "category": "Autonomic"
+    },
+    {
+      "feature_name": "Resting HR Shift (+14 bpm)",
+      "contribution_value": 0.14,
+      "direction": "increases_risk",
+      "category": "Hemodynamic"
+    },
+    {
+      "feature_name": "Hypertension History Duration (12y)",
+      "contribution_value": 0.08,
+      "direction": "increases_risk",
+      "category": "EHR"
+    }
+  ],
+  "recommended_clinical_action": "Contact physician within 2 hours. Review missed dose ingestion history and prompt re-dosing under clinical direction."
+}

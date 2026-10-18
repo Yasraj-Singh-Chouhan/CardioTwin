@@ -1,0 +1,23 @@
+{
+  "patient_id": "CT-3092",
+  "scenario_type": "missed_dose",
+  "scenario_title": "Missed Dose (Amlodipine 5mg +24h)",
+  "state_label": "State: Perturbed",
+  "baseline_peak_sbp": 154.0,
+  "perturbed_peak_sbp": 184.0,
+  "baseline_risk_score": 48.0,
+  "perturbed_risk_score": 68.0,
+  "risk_tier_before": "ELEVATED",
+  "risk_tier_after": "HIGH",
+  "eta_to_threshold_hours": 5.4,
+  "trajectory_comparison": [
+    { "hour": 0.0, "baseline_sbp": 154.0, "scenario_sbp": 154.0, "baseline_dbp": 98.0, "scenario_dbp": 98.0 },
+    { "hour": 2.0, "baseline_sbp": 152.0, "scenario_sbp": 164.0, "baseline_dbp": 96.0, "scenario_dbp": 102.0 },
+    { "hour": 4.0, "baseline_sbp": 150.0, "scenario_sbp": 174.0, "baseline_dbp": 94.0, "scenario_dbp": 107.0 },
+    { "hour": 5.4, "baseline_sbp": 149.0, "scenario_sbp": 184.0, "baseline_dbp": 93.0, "scenario_dbp": 112.0 },
+    { "hour": 8.0, "baseline_sbp": 148.0, "scenario_sbp": 178.0, "baseline_dbp": 92.0, "scenario_dbp": 108.0 },
+    { "hour": 12.0, "baseline_sbp": 146.0, "scenario_sbp": 168.0, "baseline_dbp": 90.0, "scenario_dbp": 102.0 }
+  ],
+  "plain_language_impact": "Omitting Amlodipine for an additional 24 hours accelerates peripheral vascular resistance by +28%, driving simulated systolic pressure over the 180 mmHg safety margin by T+5.4h.",
+  "disclaimer": "Model-based estimate under our simulation assumptions. Not clinical proof. Decision support only."
+}

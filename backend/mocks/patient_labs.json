@@ -1,0 +1,92 @@
+{
+  "patient_id": "CT-3092",
+  "latest_labs": [
+    {
+      "test_name": "HbA1c",
+      "value": 7.8,
+      "unit": "%",
+      "reference_range": "< 6.5%",
+      "is_abnormal": true,
+      "timestamp": "2026-10-10T09:30:00Z"
+    },
+    {
+      "test_name": "LDL Cholesterol",
+      "value": 142.0,
+      "unit": "mg/dL",
+      "reference_range": "< 70 mg/dL",
+      "is_abnormal": true,
+      "timestamp": "2026-10-10T09:30:00Z"
+    },
+    {
+      "test_name": "Total Cholesterol / HDL",
+      "value": 4.6,
+      "unit": "ratio",
+      "reference_range": "< 4.0",
+      "is_abnormal": true,
+      "timestamp": "2026-10-10T09:30:00Z"
+    },
+    {
+      "test_name": "eGFR",
+      "value": 68.0,
+      "unit": "mL/min/1.73m²",
+      "reference_range": "> 90 mL/min/1.73m²",
+      "is_abnormal": true,
+      "timestamp": "2026-10-10T09:30:00Z"
+    },
+    {
+      "test_name": "hs-CRP",
+      "value": 3.4,
+      "unit": "mg/L",
+      "reference_range": "< 1.0 mg/L",
+      "is_abnormal": true,
+      "timestamp": "2026-10-10T09:30:00Z"
+    },
+    {
+      "test_name": "Lipoprotein(a)",
+      "value": 64.0,
+      "unit": "mg/dL",
+      "reference_range": "< 50 mg/dL",
+      "is_abnormal": true,
+      "timestamp": "2026-10-10T09:30:00Z"
+    },
+    {
+      "test_name": "Homocysteine",
+      "value": 16.8,
+      "unit": "µmol/L",
+      "reference_range": "< 15.0 µmol/L",
+      "is_abnormal": true,
+      "timestamp": "2026-10-10T09:30:00Z"
+    }
+  ],
+  "historical_panels": [
+    {
+      "test_name": "HbA1c",
+      "value": 7.4,
+      "unit": "%",
+      "reference_range": "< 6.5%",
+      "is_abnormal": true,
+      "timestamp": "2026-04-12T10:00:00Z"
+    },
+    {
+      "test_name": "LDL Cholesterol",
+      "value": 138.0,
+      "unit": "mg/dL",
+      "reference_range": "< 70 mg/dL",
+      "is_abnormal": true,
+      "timestamp": "2026-04-12T10:00:00Z"
+    },
+    {
+      "test_name": "eGFR",
+      "value": 72.0,
+      "unit": "mL/min/1.73m²",
+      "reference_range": "> 90 mL/min/1.73m²",
+      "is_abnormal": true,
+      "timestamp": "2026-04-12T10:00:00Z"
+    }
+  ],
+  "slopes_6m": {
+    "hba1c_slope_6m": 0.4,
+    "egfr_decline_rate_annual": -4.0,
+    "ldl_target_attainment": 0.0
+  }
+}

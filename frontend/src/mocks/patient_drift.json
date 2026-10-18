@@ -1,0 +1,90 @@
+{
+  "patient_id": "CT-3092",
+  "current_tdi": 41.0,
+  "nominal_threshold": 25.0,
+  "alert_threshold": 50.0,
+  "status": "Elevated Divergence",
+  "seven_day_trend": [
+    {
+      "date": "Nov 07",
+      "day_label": "Day -6",
+      "tdi_score": 12.0,
+      "flag": null
+    },
+    {
+      "date": "Nov 08",
+      "day_label": "Day -5",
+      "tdi_score": 14.0,
+      "flag": null
+    },
+    {
+      "date": "Nov 09",
+      "day_label": "Day -4",
+      "tdi_score": 15.0,
+      "flag": null
+    },
+    {
+      "date": "Nov 10",
+      "day_label": "Day -3",
+      "tdi_score": 18.0,
+      "flag": null
+    },
+    {
+      "date": "Nov 11",
+      "day_label": "Day -2",
+      "tdi_score": 28.0,
+      "flag": "Day -2 Event Flag: Nocturnal PPG noise & skipped scheduled cuff calibration"
+    },
+    {
+      "date": "Nov 12",
+      "day_label": "Yesterday",
+      "tdi_score": 39.0,
+      "flag": null
+    },
+    {
+      "date": "Nov 13",
+      "day_label": "Today (Day 0)",
+      "tdi_score": 41.0,
+      "flag": "Today: +41 TDI breach. Elevated autonomic offset"
+    }
+  ],
+  "factor_contributions": [
+    {
+      "factor_name": "Resting Heart Rate (HR)",
+      "percentage": 28.0,
+      "direction": "up",
+      "baseline_value": "64 bpm",
+      "observed_value": "78 bpm (Nocturnal shift +14 bpm)",
+      "signal_snr": "96%",
+      "confidence": "High Confidence"
+    },
+    {
+      "factor_name": "HRV (RMSSD)",
+      "percentage": 34.0,
+      "direction": "down",
+      "baseline_value": "38ms",
+      "observed_value": "18ms (Sympathetic uncoupling)",
+      "signal_snr": "< 2.1% error",
+      "confidence": "Sensor artifact < 2.1%"
+    },
+    {
+      "factor_name": "Sleep Architecture",
+      "percentage": 22.0,
+      "direction": "down",
+      "baseline_value": "6.6h total",
+      "observed_value": "4.8h total (-1.8h deficit, 4 wake episodes)",
+      "signal_snr": "Validated",
+      "confidence": "Actigraphy Validated"
+    },
+    {
+      "factor_name": "Activity & Exertion Load",
+      "percentage": 16.0,
+      "direction": "down",
+      "baseline_value": "6,500 steps/day",
+      "observed_value": "3,120 steps/day (Sedentary index +40%)",
+      "signal_snr": "Continuous",
+      "confidence": "Continuous Accelerometer"
+    }
+  ],
+  "recommendation": "Physiological Re-alignment Recommended: Twin drift has crossed the 40-point nominal threshold due to acute autonomic fatigue and atmospheric covariates."
+}

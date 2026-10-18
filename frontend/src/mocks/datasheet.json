@@ -1,0 +1,81 @@
+{
+  "system_name": "CardioTwin v4.8b",
+  "regulatory_framework": "CDSCO Class B SaMD Exploratory Sandbox",
+  "disclaimer": "Semi-synthetic cohort: built from real open recordings and published statistics. Never real patient data. Parameterized for South Asian cardiovascular physiological phenotypes. Decision support only. Not a primary standalone diagnostic instrument.",
+  "audit_hash": "0x9f7a62b14c3e88d04e5781a8b417c8033c2e1189d2a6e9f0",
+  "kpi": {
+    "in_silico_patients": 1000,
+    "cohort_id": "CT-IND-V4",
+    "parameterization_percent": 100.0,
+    "longitudinal_window_days": 30,
+    "epochs_per_subject": 2592000,
+    "crisis_episode_prevalence_percent": 12.4,
+    "crisis_cases_count": 124,
+    "total_cases": 1000
+  },
+  "provenance_rows": [
+    {
+      "field_name": "Age",
+      "status": "Real-fitted",
+      "source": "NFHS-5 (National Family Health Survey India)",
+      "biophysical_notes": "Weibull distribution fitted to Indian hypertensive curve (40–78y)"
+    },
+    {
+      "field_name": "BMI",
+      "status": "Real-fitted",
+      "source": "ICMR-INDIAB Cohort Data",
+      "biophysical_notes": "Calibrated for South Asian visceral adiposity (cutoff ≥23 kg/m²)"
+    },
+    {
+      "field_name": "Smoking / Tobacco",
+      "status": "Real-fitted",
+      "source": "GATS India Survey",
+      "biophysical_notes": "Bidi and smokeless tobacco peripheral vascular tone adjustments"
+    },
+    {
+      "field_name": "HbA1c",
+      "status": "Derived",
+      "source": "AIIMS Endocrinology Registry",
+      "biophysical_notes": "Correlated with diabetic microvascular endothelial resistance"
+    },
+    {
+      "field_name": "Blood Pressure (SBP/DBP)",
+      "status": "Real-fitted",
+      "source": "MIMIC-IV & Tonometric trials",
+      "biophysical_notes": "Continuous waveform via 3-element Windkessel model (nocturnal dip & morning surge)"
+    },
+    {
+      "field_name": "HRV Baseline (RMSSD/SDNN)",
+      "status": "Real-fitted",
+      "source": "PhysioNet autonomic bank (MMASH & MIT-BIH)",
+      "biophysical_notes": "Nocturnal parasympathetic tone and baroreceptor damping dynamics"
+    },
+    {
+      "field_name": "Lipoprotein(a)",
+      "status": "Real-fitted",
+      "source": "Indian Atherosclerosis Registry",
+      "biophysical_notes": "South Asian elevated threshold (>50 mg/dL) incorporated in chronic twin"
+    },
+    {
+      "field_name": "Ambient PM2.5 & AQI",
+      "status": "Derived",
+      "source": "CPCB Open Air Quality Data",
+      "biophysical_notes": "Indian urban seasonal profiles (winter smog, pre-monsoon heat, Diwali spikes)"
+    }
+  ],
+  "distribution_validation": {
+    "ks_fit_percent": 98.2,
+    "wasserstein_distance_mmhg": 0.018,
+    "windkessel_biofit_status": "Nominal",
+    "sbp_density_divergence": "D = 0.024 (p=0.89)",
+    "density_curve_points": [
+      { "sbp": 90, "real_density": 0.002, "synthetic_density": 0.002 },
+      { "sbp": 120, "real_density": 0.015, "synthetic_density": 0.016 },
+      { "sbp": 140, "real_density": 0.024, "synthetic_density": 0.025 },
+      { "sbp": 160, "real_density": 0.018, "synthetic_density": 0.019 },
+      { "sbp": 180, "real_density": 0.008, "synthetic_density": 0.008 },
+      { "sbp": 210, "real_density": 0.001, "synthetic_density": 0.001 }
+    ]
+  },
+  "compliance_notes": "Benchmarked against STROBE-compliant clinical observation protocols and calibrated using Bayesian hyperparameter optimization."
+}

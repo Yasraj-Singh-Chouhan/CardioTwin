@@ -1,0 +1,78 @@
+{
+  "patient_id": "CT-3092",
+  "name": "Rajesh Verma",
+  "initials": "RV",
+  "age": 58,
+  "sex": "M",
+  "city": "Delhi NCR",
+  "avatar_url": "https://lh3.googleusercontent.com/aida-public/AB6AXuA4ExvbrEqHgNIVXkBlH3HTD4dhfL75EH_m2NgUsTqdjHcA2fnDKftsj0oAmyzYGz_JUVp6ucZrTuJ91kBwSkL0PSkEHaOvbg9RNanzNpftoC5l7jWWxiLXeWoQbf1_juhZGYbRRInZcyYUe0WeLFqsMQjgaYIa8ePXlWysn7M-1GpSM4Qqi_6EW1zxQia5LP7kknlNfsF5yuCDkz7QMUJPF5vTwz2pfkLAdGZyPJecyUSMjHxHY5YGBQ",
+  "primary_condition": "Hypertension (Stage 2)",
+  "secondary_conditions": [
+    "T2 Diabetes",
+    "Dyslipidemia"
+  ],
+  "htn_stage": "Stage 2",
+  "diabetes_type": "T2DM",
+  "diabetes_duration_years": 7.0,
+  "htn_duration_years": 12.0,
+  "prior_mi": false,
+  "prior_pci_cabg": false,
+  "family_history_premature_cvd": true,
+  "tobacco_chewing": false,
+  "smoking_status": "Non-smoker",
+  "dietary_pattern": "Vegetarian",
+  "bmi": 27.4,
+  "bmi_flagged": true,
+  "waist_circumference_cm": 98.0,
+  "risk_tier": "HIGH",
+  "fused_risk_score": 68.0,
+  "medications": [
+    {
+      "id": "med-1",
+      "name": "Amlodipine",
+      "dosage": "5mg",
+      "frequency": "Once daily (OD)",
+      "adherence_score": 0.65,
+      "last_taken_time": "2026-10-15T08:00:00Z",
+      "missed_doses_count": 1,
+      "omission_interval_hours": 36.0
+    },
+    {
+      "id": "med-2",
+      "name": "Telmisartan",
+      "dosage": "40mg",
+      "frequency": "Once daily (OD)",
+      "adherence_score": 0.88,
+      "last_taken_time": "2026-10-16T08:00:00Z",
+      "missed_doses_count": 0,
+      "omission_interval_hours": 0.0
+    },
+    {
+      "id": "med-3",
+      "name": "Metformin",
+      "dosage": "500mg",
+      "frequency": "Twice daily (BD)",
+      "adherence_score": 0.92,
+      "last_taken_time": "2026-10-16T08:00:00Z",
+      "missed_doses_count": 0,
+      "omission_interval_hours": 0.0
+    },
+    {
+      "id": "med-4",
+      "name": "Atorvastatin",
+      "dosage": "20mg",
+      "frequency": "Once daily at night (HS)",
+      "adherence_score": 0.90,
+      "last_taken_time": "2026-10-15T21:00:00Z",
+      "missed_doses_count": 0,
+      "omission_interval_hours": 0.0
+    }
+  ],
+  "baseline_sbp": 142.0,
+  "baseline_dbp": 90.0,
+  "baseline_resting_hr": 64.0,
+  "baseline_rmssd": 38.0,
+  "sync_status": "Continuous PPG/BP",
+  "last_sync": "2m ago",
+  "notes": "Decision support only. Not a diagnosis. Evaluated on semi-synthetic cohort."
+}

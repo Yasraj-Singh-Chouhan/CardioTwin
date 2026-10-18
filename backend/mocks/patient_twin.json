@@ -1,0 +1,31 @@
+{
+  "patient_id": "CT-3092",
+  "fused_risk_score": 68.0,
+  "risk_tier": "HIGH",
+  "windkessel_params": {
+    "r_peripheral": 1.32,
+    "r_peripheral_shift_percent": 28.0,
+    "c_arterial": 0.88,
+    "z_characteristic": 0.06,
+    "stroke_volume_ml": 70.0,
+    "cardiac_output_l_min": 5.4,
+    "biofit_tolerance_percent": 94.0
+  },
+  "scales": {
+    "chronic_twin_score": 42.0,
+    "chronic_twin_label": "Vascular remodeling & aortic stiffening (Windkessel C_art = 0.88 mL/mmHg)",
+    "acute_twin_score": 74.0,
+    "acute_twin_label": "Sympathetic surge & peripheral resistance escalation (R_p +28%)",
+    "composite_stress_percent": 68.0
+  },
+  "days_to_risk": "Days-to-risk: ~3 days (range 2–5)",
+  "delta_tdi": 0.14,
+  "calibration_status": "CALIBRATED",
+  "microvascular_state": {
+    "augmentation_index": "+14%",
+    "status": "Borderline"
+  },
+  "last_calibrated_at": "2026-10-16T14:38:00Z",
+  "next_recalibration_estimate": "T-18h",
+  "disclaimer": "Decision support only. Not a diagnosis. Evaluated on semi-synthetic cohort."
+}

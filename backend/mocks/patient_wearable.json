@@ -1,0 +1,61 @@
+{
+  "patient_id": "CT-3092",
+  "window_start": "2026-10-15T18:50:00Z",
+  "window_end": "2026-10-16T18:50:00Z",
+  "sampling_resolution": "5-minute windows",
+  "summary": {
+    "resting_hr_bpm": 64.0,
+    "nocturnal_dip_percent": 6.8,
+    "morning_surge_mmhg": 24.0,
+    "hrv_rmssd_mean": 24.6,
+    "hypertensive_burden_percent": 42.0,
+    "tachycardia_burden_percent": 12.0
+  },
+  "data_points": [
+    {
+      "timestamp": "2026-10-16T14:50:00Z",
+      "heart_rate": 72.0,
+      "hrv_rmssd": 28.0,
+      "hrv_sdnn": 42.0,
+      "hrv_lf_hf": 2.1,
+      "systolic_bp": 148.0,
+      "diastolic_bp": 92.0,
+      "mean_arterial_pressure": 110.7,
+      "spo2": 97.0,
+      "step_count": 420,
+      "active_minutes": 5,
+      "sedentary_minutes": 0,
+      "sleep_stage": null
+    },
+    {
+      "timestamp": "2026-10-16T16:50:00Z",
+      "heart_rate": 76.0,
+      "hrv_rmssd": 22.0,
+      "hrv_sdnn": 36.0,
+      "hrv_lf_hf": 2.5,
+      "systolic_bp": 150.0,
+      "diastolic_bp": 95.0,
+      "mean_arterial_pressure": 113.3,
+      "spo2": 97.0,
+      "step_count": 80,
+      "active_minutes": 1,
+      "sedentary_minutes": 4,
+      "sleep_stage": null
+    },
+    {
+      "timestamp": "2026-10-16T18:50:00Z",
+      "heart_rate": 78.0,
+      "hrv_rmssd": 18.0,
+      "hrv_sdnn": 31.0,
+      "hrv_lf_hf": 2.8,
+      "systolic_bp": 154.0,
+      "diastolic_bp": 98.0,
+      "mean_arterial_pressure": 116.7,
+      "spo2": 96.0,
+      "step_count": 20,
+      "active_minutes": 0,
+      "sedentary_minutes": 5,
+      "sleep_stage": null
+    }
+  ]
+}

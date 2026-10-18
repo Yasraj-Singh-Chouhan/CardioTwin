@@ -1,0 +1,15 @@
+field,status,source,notes
+age,Real-fitted,NFHS-5 India,"Weibull fitted (35-80y, mean 56.4y)"
+sex,Real-fitted,NFHS-5 India,"62% Male, 38% Female cohort split"
+bmi,Real-fitted,ICMR-INDIAB,Calibrated for South Asian visceral adiposity (cutoff >=23)
+waist_circumference_cm,Real-fitted,ICMR-INDIAB,"Indian threshold (Men >=90cm, Women >=80cm)"
+hypertension,Real-fitted,Lancet India State-Level Burden,Prevalence ~75% in enriched outpatient cohort
+diabetes,Real-fitted,ICMR-INDIAB,Prevalence ~48% in secondary prevention cohort
+tobacco_chewing,Real-fitted,GATS India 2016-17,Smokeless tobacco peripheral tone adjustments
+smoking_status,Real-fitted,GATS India 2016-17,Bidi and cigarette distribution by sex
+diet_type,Real-fitted,NFHS-5 India,Vegetarian vs non-vegetarian distribution
+hba1c,Derived,AIIMS Endocrinology,Correlated with diabetic microvascular endothelial resistance
+blood_pressure,Real-fitted,MIMIC-IV & Tonometric trials,3-element Windkessel circadian waveform
+lipoprotein_a,Real-fitted,INTERHEART South Asia,Elevated (>50 mg/dL) in ~35% South Asians
+homocysteine,Derived,Indian Atherosclerosis Registry,Elevated in South Asian vegetarian phenotypes
+windkessel_parameters,Derived,Westerhof et al. 2009,"Rp, Cart, Zc initialized from patient EHR and calibrated"

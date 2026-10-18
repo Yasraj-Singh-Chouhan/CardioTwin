@@ -1,0 +1,11 @@
+{
+  "patient_id": "CT-3092",
+  "estimated_days_to_target": 3.0,
+  "range_min_days": 2.0,
+  "range_max_days": 5.0,
+  "target_tier": "HIGH",
+  "urgency_chip_text": "Days-to-risk: ~3 days (range 2–5)",
+  "trend_slope": 0.08,
+  "confidence_interval_description": "80% Bayesian Credible Interval from autoregressive trajectory projection",
+  "notes": "Model-based estimate under our simulation assumptions. Not a clinical diagnosis."
+}

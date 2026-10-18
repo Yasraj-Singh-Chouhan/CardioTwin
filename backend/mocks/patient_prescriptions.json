@@ -1,0 +1,45 @@
+{
+  "patient_id": "CT-3092",
+  "current_risk_tier": "HIGH",
+  "target_risk_tier": "ELEVATED",
+  "ranked_options": [
+    {
+      "rank": 1,
+      "title": "Earlier Bedtime + Nocturnal Ambient Chill Mitigation",
+      "description": "Advance sleep schedule by 45 minutes and maintain bedroom temperature above 18°C to reduce sympathetic surge.",
+      "difficulty_cost": 1.2,
+      "target_risk_tier": "ELEVATED",
+      "projected_risk_score": 48.0,
+      "changes": {
+        "bedtime_advance_minutes": 45,
+        "target_sleep_hours": 7.0,
+        "ambient_temp_minimum_c": 18.5
+      }
+    },
+    {
+      "rank": 2,
+      "title": "Indoor Exertion Substitution during Peak PM2.5",
+      "description": "Replace outdoor morning walk during high-AQI hours with indoor brisk walking (4,000 steps).",
+      "difficulty_cost": 1.8,
+      "target_risk_tier": "ELEVATED",
+      "projected_risk_score": 46.0,
+      "changes": {
+        "indoor_steps_daily": 4000,
+        "avoid_outdoor_exposure_hours": "06:00-09:00"
+      }
+    },
+    {
+      "rank": 3,
+      "title": "Medication Timing & Reminder Optimization",
+      "description": "Pair morning antihypertensive with breakfast routine to eliminate dosing lapses.",
+      "difficulty_cost": 2.1,
+      "target_risk_tier": "MODERATE",
+      "projected_risk_score": 38.0,
+      "changes": {
+        "target_adherence_percent": 95.0,
+        "dosing_window_variance_minutes": 15
+      }
+    }
+  ],
+  "disclaimer": "Model-based estimate under our simulation assumptions. Prescriptions are non-pharmacological behavioral suggestions for clinical evaluation."
+}

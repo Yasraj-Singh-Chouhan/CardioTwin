@@ -1,0 +1,8 @@
+{
+  "is_playing": true,
+  "current_speed": "10x",
+  "telemetry_clock": "T+04:12:00 (Past 24h)",
+  "elapsed_seconds": 15120.0,
+  "buffer_window": "7-day buffer",
+  "sim_live_status": "Sim Live"
+}
