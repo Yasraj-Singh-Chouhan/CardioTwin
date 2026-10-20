@@ -1,5 +1,5 @@
-import { useState } from 'react';
-import { useParams, Link } from 'react-router-dom';
+import { useState, useEffect } from 'react';
+import { useParams, useSearchParams, Link } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import {
   BrainCircuit,
@@ -17,6 +17,7 @@ import {
   Calculator,
   MessageSquare,
   ShieldCheck,
+  UserCheck,
 } from 'lucide-react';
 import { getPatientDetail, getTwinState, getPredictions, getPatientAlerts, acknowledgeAlert, escalateAlert } from '../api/client';
 import { useReplay } from '../hooks/useReplay';
@@ -32,9 +33,13 @@ import { SbarHandoverModal } from '../components/SbarHandoverModal';
 import { DrugTitrationCalculatorModal } from '../components/DrugTitrationCalculatorModal';
 import { ConsultantAlertModal } from '../components/ConsultantAlertModal';
 import { useAudioTelemetry } from '../hooks/useAudioTelemetry';
+import { ExactMinimalDigitalTwin } from '../components/inspiration/ExactMinimalDigitalTwin';
 
 export default function TwinPage() {
   const { id } = useParams<{ id: string }>();
+  const [searchParams, setSearchParams] = useSearchParams();
+  const initialRole = searchParams.get('role') === 'doctor' ? 'advanced' : 'minimal';
+
   const patientId = id || 'CT-3092';
   const { triggerCardiacBeep } = useAudioTelemetry();
 
@@ -46,6 +51,16 @@ export default function TwinPage() {
   const [showConsultantModal, setShowConsultantModal] = useState(false);
   const [selectedProtocol, setSelectedProtocol] = useState('Stat CCU Triage & Continuous Tonometry');
   const [actionNotice, setActionNotice] = useState<{ type: 'ack' | 'esc'; title: string; detail: string } | null>(null);
+  const [viewMode, setViewMode] = useState<'minimal' | 'advanced'>(initialRole);
+
+  useEffect(() => {
+    const roleParam = searchParams.get('role');
+    if (roleParam === 'doctor') {
+      setViewMode('advanced');
+    } else if (roleParam === 'patient') {
+      setViewMode('minimal');
+    }
+  }, [searchParams]);
 
   // Live WebSocket Replay Hook
   const {
@@ -95,7 +110,7 @@ export default function TwinPage() {
   const isCrisis = currentSbp >= 165 || currentRiskScore >= 75;
 
   return (
-    <div className="flex flex-col w-full max-w-[1560px] mx-auto gap-4 mt-2 pb-10">
+    <div className="w-full min-h-screen">
       {isLoading && <GlassSkeleton lines={7} />}
       {isError && (
         <GlassError
@@ -108,17 +123,69 @@ export default function TwinPage() {
         />
       )}
 
-      {patient && twin && predictions && (
-        <>
-          {/* Top Patient Master Bar */}
+      {viewMode === 'minimal' ? (
+        <div className="relative w-full min-h-screen">
+          <div className="fixed top-4 right-6 z-50">
+            <button
+              onClick={() => {
+                setViewMode('advanced');
+                setSearchParams({ role: 'doctor' });
+              }}
+              className="px-4 py-2 rounded-full bg-white/95 hover:bg-white text-slate-800 font-bold text-[12px] shadow-md border border-slate-200/80 transition-all flex items-center gap-2 active:scale-95 cursor-pointer hover:border-[#1d5bf0]"
+              title="Open Doctor / Clinician Inpatient CCU Command Center"
+            >
+              <Stethoscope className="w-4 h-4 text-[#1d5bf0]" />
+              <span>Switch to Doctor Portal</span>
+              <span className="text-[#1d5bf0]">&rarr;</span>
+            </button>
+          </div>
+
+          <ExactMinimalDigitalTwin
+            patientId={patientId}
+            patientName={patient?.name || 'Jacqueline Delaney'}
+            heartRate={currentHr || 78}
+            sbp={currentSbp || 124}
+            dbp={currentDbp || 80}
+            bloodSugar="120/160"
+            glucoseLevel={230}
+          />
+        </div>
+      ) : (
+        <div className="flex flex-col w-full max-w-[1560px] mx-auto gap-4 mt-2 pb-10 px-4">
+          <div className="flex items-center justify-between py-2 border-b border-slate-200/80">
+            <div className="flex items-center gap-3">
+              <span className="px-3 py-1 rounded-full bg-blue-50 text-[#1d5bf0] font-mono text-[11px] font-bold border border-blue-100 flex items-center gap-1.5">
+                <Stethoscope className="w-3.5 h-3.5" />
+                <span>Doctor Portal &bull; Inpatient CCU Command Center</span>
+              </span>
+              <span className="text-[12px] text-slate-500 font-medium hidden sm:inline">
+                Attending: <strong>Dr. A. Sharma (CCU Lead)</strong> &bull; Patient: <strong>{patientId}</strong>
+              </span>
+            </div>
+
+            <button
+              onClick={() => {
+                setViewMode('minimal');
+                setSearchParams({ role: 'patient' });
+              }}
+              className="px-4 py-1.5 rounded-full bg-white hover:bg-slate-50 text-slate-700 font-semibold text-[12px] shadow-xs border border-slate-200/80 flex items-center gap-1.5 transition-all cursor-pointer hover:border-slate-300"
+            >
+              <UserCheck className="w-3.5 h-3.5 text-[#1d5bf0]" />
+              <span>&larr; Switch to Patient Portal</span>
+            </button>
+          </div>
+
+          {patient && twin && predictions && (
+            <>
+              {/* Top Patient Master Bar */}
           <GlassCard className="w-full flex flex-wrap items-center justify-between gap-4 px-6 py-4 border border-white/80">
             <div className="flex items-center gap-4">
-              {/* Patient Initials Avatar with Risk Ring */}
+                  {/* Patient Initials Avatar with Risk Ring */}
               <div
                 className={`relative w-13 h-13 rounded-2xl flex items-center justify-center font-bold text-[19px] shrink-0 font-mono shadow-xs ${
                   patient.risk_tier === 'CRITICAL'
                     ? 'bg-red-50 text-[#ba1a1a] border-2 border-[#ba1a1a]/30'
-                    : 'bg-[#e2f1ef] text-[#00666f] border-2 border-[#00666f]/20'
+                    : 'bg-[#e5efff] text-[#1d5bf0] border-2 border-[#1d5bf0]/20'
                 }`}
                 style={{ fontFamily: 'Plus Jakarta Sans' }}
               >
@@ -136,7 +203,7 @@ export default function TwinPage() {
                   <h1 className="text-[22px] font-bold text-[#111e1d] leading-none" style={{ fontFamily: 'Plus Jakarta Sans' }}>
                     {patient.name}
                   </h1>
-                  <span className="text-[12px] font-mono font-bold px-2.5 py-0.5 rounded-full bg-[#e0f1ef] text-[#00666f]">
+                  <span className="text-[12px] font-mono font-bold px-2.5 py-0.5 rounded-full bg-[#e5efff] text-[#1d5bf0]">
                     {patient.patient_id}
                   </span>
                   <RiskBadge tier={patient.risk_tier} />
@@ -150,7 +217,7 @@ export default function TwinPage() {
                   <span>•</span>
                   <span>BMI <strong>{patient.bmi}</strong></span>
                   <span>•</span>
-                  <span className="text-[11px] font-semibold text-[#00666f] bg-white/70 px-2 py-0.5 rounded-full border border-gray-100">
+                  <span className="text-[11px] font-semibold text-[#1d5bf0] bg-blue-50 px-2 py-0.5 rounded-full border border-blue-100">
                     South Asian Phenotype Calibrated
                   </span>
                 </div>
@@ -161,23 +228,23 @@ export default function TwinPage() {
             <div className="flex items-center gap-2">
               <Link
                 to={`/patients/${patient.patient_id}/explanation`}
-                className="px-3.5 py-2 rounded-xl bg-white/80 hover:bg-white text-[#00666f] text-[12px] font-semibold transition-all shadow-2xs border border-white hover:border-[#00666f]/20 flex items-center gap-1.5"
+                className="px-3.5 py-2 rounded-xl bg-white/80 hover:bg-white text-[#1d5bf0] text-[12px] font-semibold transition-all shadow-2xs border border-white hover:border-[#1d5bf0]/20 flex items-center gap-1.5"
               >
-                <BrainCircuit className="w-4 h-4 text-[#00666f]" />
+                <BrainCircuit className="w-4 h-4 text-[#1d5bf0]" />
                 <span>SHAP Causality</span>
               </Link>
               <Link
                 to={`/patients/${patient.patient_id}/scenarios`}
-                className="px-3.5 py-2 rounded-xl bg-white/80 hover:bg-white text-[#00666f] text-[12px] font-semibold transition-all shadow-2xs border border-white hover:border-[#00666f]/20 flex items-center gap-1.5"
+                className="px-3.5 py-2 rounded-xl bg-white/80 hover:bg-white text-[#1d5bf0] text-[12px] font-semibold transition-all shadow-2xs border border-white hover:border-[#1d5bf0]/20 flex items-center gap-1.5"
               >
-                <GitFork className="w-4 h-4 text-[#00666f]" />
+                <GitFork className="w-4 h-4 text-[#1d5bf0]" />
                 <span>What-If Testing</span>
               </Link>
               <Link
                 to={`/patients/${patient.patient_id}/signals`}
-                className="px-3.5 py-2 rounded-xl bg-white/80 hover:bg-white text-[#00666f] text-[12px] font-semibold transition-all shadow-2xs border border-white hover:border-[#00666f]/20 flex items-center gap-1.5"
+                className="px-3.5 py-2 rounded-xl bg-white/80 hover:bg-white text-[#1d5bf0] text-[12px] font-semibold transition-all shadow-2xs border border-white hover:border-[#1d5bf0]/20 flex items-center gap-1.5"
               >
-                <Activity className="w-4 h-4 text-[#00666f]" />
+                <Activity className="w-4 h-4 text-[#1d5bf0]" />
                 <span>Signals &amp; Recalibration</span>
               </Link>
             </div>
@@ -186,18 +253,18 @@ export default function TwinPage() {
           {/* Attending Physician Clinical Rapid Tools Toolbar */}
           <div className="w-full flex flex-wrap items-center justify-between gap-3 px-1 py-1">
             <div className="flex flex-wrap items-center gap-2">
-              <span className="text-[11px] font-bold uppercase tracking-wider text-[#00666f] font-mono flex items-center gap-1.5 mr-1">
-                <Stethoscope className="w-3.5 h-3.5 text-[#00666f]" />
+              <span className="text-[11px] font-bold uppercase tracking-wider text-[#1d5bf0] font-mono flex items-center gap-1.5 mr-1">
+                <Stethoscope className="w-3.5 h-3.5 text-[#1d5bf0]" />
                 Physician Rapid Tools:
               </span>
 
               <button
                 onClick={() => setShowSbarModal(true)}
-                className="px-3.5 py-1.5 rounded-xl bg-white/90 hover:bg-white text-[#111e1d] text-[12px] font-semibold border border-[#00666f]/20 hover:border-[#00666f] shadow-2xs transition-all flex items-center gap-1.5 active:scale-95"
+                className="px-3.5 py-1.5 rounded-xl bg-white/90 hover:bg-white text-[#111e1d] text-[12px] font-semibold border border-[#1d5bf0]/20 hover:border-[#1d5bf0] shadow-2xs transition-all flex items-center gap-1.5 active:scale-95"
                 type="button"
                 title="Generate structured SBAR clinical report for shift handover"
               >
-                <FileText className="w-3.5 h-3.5 text-[#00666f]" />
+                <FileText className="w-3.5 h-3.5 text-[#1d5bf0]" />
                 <span>SBAR Shift Handover Note</span>
               </button>
 
@@ -223,7 +290,7 @@ export default function TwinPage() {
             </div>
 
             <div className="text-[11px] text-[#445f73] font-medium hidden xl:flex items-center gap-1.5 bg-white/60 px-3 py-1 rounded-xl border border-white/80">
-              <ShieldCheck className="w-3.5 h-3.5 text-[#00666f]" />
+              <ShieldCheck className="w-3.5 h-3.5 text-[#1d5bf0]" />
               <span>Clinical Guideline: Lower MAP &le; 25% in hour 1 to preserve autoregulation</span>
             </div>
           </div>
@@ -336,11 +403,11 @@ export default function TwinPage() {
 
                   <div className="text-[12px]">
                     <div className="flex justify-between font-semibold mb-1">
-                      <span className="text-[#00666f]">Slow-Twin (Chronic Atherosclerotic Stiffening)</span>
-                      <span className="font-bold text-[#00666f] font-mono">{twin.scales.chronic_twin_score}%</span>
+                      <span className="text-[#1d5bf0]">Slow-Twin (Chronic Atherosclerotic Stiffening)</span>
+                      <span className="font-bold text-[#1d5bf0] font-mono">{twin.scales.chronic_twin_score}%</span>
                     </div>
-                    <div className="w-full h-2 rounded-full bg-[#e0f1ef] overflow-hidden mb-1">
-                      <div className="h-full bg-[#00666f] rounded-full" style={{ width: `${twin.scales.chronic_twin_score}%` }} />
+                    <div className="w-full h-2 rounded-full bg-[#e5efff] overflow-hidden mb-1">
+                      <div className="h-full bg-[#1d5bf0] rounded-full" style={{ width: `${twin.scales.chronic_twin_score}%` }} />
                     </div>
                     <p className="text-[11px] text-[#445f73] leading-tight">{twin.scales.chronic_twin_label}</p>
                   </div>
@@ -364,7 +431,7 @@ export default function TwinPage() {
               <GlassCard className="p-6 flex flex-col border border-white/80">
                 <div className="flex items-center justify-between mb-2">
                   <div>
-                    <span className="text-[11px] font-bold uppercase tracking-wider text-[#00666f] flex items-center gap-1.5 font-mono">
+                    <span className="text-[11px] font-bold uppercase tracking-wider text-[#1d5bf0] flex items-center gap-1.5 font-mono">
                       <Activity className="w-3.5 h-3.5" />
                       In Silico Hemodynamics
                     </span>
@@ -392,7 +459,7 @@ export default function TwinPage() {
 
                 <div className="mt-3 flex items-center justify-between text-[11px] text-[#445f73]">
                   <span className="flex items-center gap-1.5 font-medium">
-                    <span className="w-3 h-0.5 bg-[#00666f] inline-block rounded" />
+                    <span className="w-3 h-0.5 bg-[#1d5bf0] inline-block rounded" />
                     Observed Telemetry
                   </span>
                   <span className="flex items-center gap-1.5 font-medium">
@@ -408,7 +475,7 @@ export default function TwinPage() {
               {/* Medications Adherence Card */}
               <GlassCard className="p-6 flex flex-col border border-white/80">
                 <div className="flex items-center justify-between mb-1">
-                  <span className="text-[11px] font-bold uppercase tracking-wider text-[#00666f]">
+                  <span className="text-[11px] font-bold uppercase tracking-wider text-[#1d5bf0]">
                     Pharmacotherapy Adherence
                   </span>
                   <span className="text-[11px] text-[#445f73] font-medium">Recorded Inflow Gap</span>
@@ -425,7 +492,7 @@ export default function TwinPage() {
                       <div key={med.id} className="p-3.5 rounded-2xl bg-white/70 border border-gray-100 flex items-center justify-between shadow-2xs">
                         <div className="flex items-center gap-3">
                           <div className={`w-9 h-9 rounded-xl flex items-center justify-center font-bold ${
-                            isPoor ? 'bg-red-100 text-[#ba1a1a]' : 'bg-[#e2f1ef] text-[#00666f]'
+                            isPoor ? 'bg-red-100 text-[#ba1a1a]' : 'bg-[#e5efff] text-[#1d5bf0]'
                           }`}>
                             <Pill className="w-5 h-5" />
                           </div>
@@ -509,7 +576,7 @@ export default function TwinPage() {
                             alt.status === 'ESCALATED'
                               ? 'bg-purple-700'
                               : alt.status === 'ACKNOWLEDGED'
-                              ? 'bg-[#00666f]'
+                              ? 'bg-[#1d5bf0]'
                               : 'bg-[#ba1a1a]'
                           }`}>
                             {alt.tier}
@@ -603,7 +670,7 @@ export default function TwinPage() {
                     className={`w-full py-2.5 rounded-xl font-bold text-[13px] shadow-sm transition-all flex items-center justify-center gap-1.5 active:scale-98 ${
                       alerts.every((a) => a.status === 'ACKNOWLEDGED')
                         ? 'bg-emerald-600 text-white cursor-default'
-                        : 'bg-gradient-to-r from-[#00666f] to-[#00818c] hover:brightness-110 text-white'
+                        : 'bg-[#1d5bf0] hover:bg-[#1546b8] text-white'
                     }`}
                     type="button"
                   >
@@ -628,7 +695,7 @@ export default function TwinPage() {
                   <div className="p-2.5 rounded-xl bg-gray-50/80 border border-gray-200/60 text-[10px] text-[#445f73] leading-relaxed">
                     <span className="font-bold text-[#111e1d]">📡 Live Recipient Dashboards:</span>
                     <div className="mt-1 flex flex-wrap items-center gap-2">
-                      <Link to="/nursing-desk" className="font-bold text-[#00666f] hover:underline flex items-center gap-0.5">
+                      <Link to="/nursing-desk" className="font-bold text-[#1d5bf0] hover:underline flex items-center gap-0.5">
                         <span>👩‍⚕️ Central CCU Nursing Desk</span>
                       </Link>
                       <span>&bull;</span>
@@ -740,8 +807,8 @@ export default function TwinPage() {
                   ))}
                 </div>
 
-                <div className="p-3.5 rounded-xl bg-[#e2f1ef]/70 text-[12px] text-[#00666f] flex items-center gap-2 border border-[#00666f]/15">
-                  <Stethoscope className="w-4 h-4 text-[#00666f]" />
+                <div className="p-3.5 rounded-xl bg-[#e5efff] text-[12px] text-[#1d5bf0] flex items-center gap-2 border border-[#1d5bf0]/15">
+                  <Stethoscope className="w-4 h-4 text-[#1d5bf0]" />
                   <span>Subject: <strong>{patient.patient_id}</strong> ({patient.name}) &bull; Attending: <strong>Dr. A. Sharma</strong></span>
                 </div>
 
@@ -792,7 +859,9 @@ export default function TwinPage() {
               </div>
             </div>
           )}
-        </>
+            </>
+          )}
+        </div>
       )}
     </div>
   );

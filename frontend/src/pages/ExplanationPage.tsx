@@ -53,7 +53,7 @@ export default function ExplanationPage() {
           <GlassCard className="w-full flex flex-wrap items-center justify-between gap-4 px-6 py-4 border border-white/80">
             <div className="flex items-center gap-3">
               <Link
-                to={`/patients/${patient.patient_id}`}
+                to={`/doctor/patients/${patient.patient_id}`}
                 className="w-9 h-9 rounded-xl bg-white/80 hover:bg-white text-[#445f73] flex items-center justify-center transition-all shadow-xs border border-white"
                 title="Return to Digital Twin"
               >

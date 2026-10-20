@@ -1,356 +1,461 @@
-import { NavLink, Link } from 'react-router-dom';
+import { useState, useRef, useEffect } from 'react';
+import { NavLink, Link, useNavigate, useLocation, useSearchParams } from 'react-router-dom';
 import {
-  Users,
-  HeartPulse,
-  GitFork,
-  Activity,
-  BrainCircuit,
-  ShieldCheck,
+  LayoutGrid,
+  Calendar,
   Stethoscope,
-  Lock,
   ShieldAlert,
+  FlaskConical,
+  BrainCircuit,
+  GitFork,
+  ShieldCheck,
+  Lock,
+  Search,
+  Bell,
+  Volume2,
+  VolumeX,
+  X,
+  ArrowRight,
+  Activity,
 } from 'lucide-react';
-import { useTheme } from '../context/ThemeContext';
+import { useAudioTelemetry } from '../hooks/useAudioTelemetry';
+import { quickSearchPatients, getAlertsFeed } from '../api/client';
+import type { QuickSearchResult, ClinicalAlert } from '../api/types';
+import RiskBadge from './RiskBadge';
 
 interface SidebarProps {
   activePatientId?: string;
 }
 
-const navItems = [
-  { path: '/roster', label: 'Crisis Roster', icon: Users, badge: 'Surveillance' },
-  { path: '/patients/CT-3092', label: 'Digital Twin', icon: HeartPulse, patientNav: true },
-  { path: '/patients/CT-3092/scenarios', label: 'Countermeasures', icon: GitFork, patientNav: true },
-  { path: '/patients/CT-3092/signals', label: 'Live Telemetry', icon: Activity, patientNav: true },
-  { path: '/patients/CT-3092/explanation', label: 'SHAP & Causality', icon: BrainCircuit, patientNav: true },
-  { path: '/datasheet', label: 'CDSCO Datasheet', icon: ShieldCheck, badge: 'Class C' },
-];
-
-const recipientItems = [
-  { path: '/nursing-desk', label: 'CCU Nursing Desk', icon: Stethoscope, badge: 'Unit 4B' },
-  { path: '/cath-lab-triage', label: 'Cath Lab Triage', icon: ShieldAlert, badge: 'Queue' },
-  { path: '/audit-vault', label: 'CDSCO Audit Vault', icon: Lock, badge: 'Ledger' },
-];
-
 export default function Sidebar({ activePatientId }: SidebarProps) {
+  const navigate = useNavigate();
+  const location = useLocation();
+  const [searchParams] = useSearchParams();
   const patientId = activePatientId || 'CT-3092';
-  const { isDark } = useTheme();
+  const { isMuted, toggleMute } = useAudioTelemetry();
 
-  const resolvedNavItems = navItems.map((item) => ({
-    ...item,
-    resolvedPath: item.patientNav
-      ? item.path.replace('CT-3092', patientId)
-      : item.path,
-  }));
+  // Role Detection: Patient Portal vs Doctor CCU Command
+  const isPatientMode =
+    searchParams.get('role') === 'patient' ||
+    (!searchParams.get('role') && location.pathname === `/patients/${patientId}`);
+
+  // Search state
+  const [showSearchModal, setShowSearchModal] = useState(false);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [searchResults, setSearchResults] = useState<QuickSearchResult[]>([]);
+  const [isSearching, setIsSearching] = useState(false);
+  const searchInputRef = useRef<HTMLInputElement>(null);
+
+  // Alerts state
+  const [showAlertsPopover, setShowAlertsPopover] = useState(false);
+  const [alerts, setAlerts] = useState<ClinicalAlert[]>([]);
+
+  useEffect(() => {
+    getAlertsFeed().then((feed) => {
+      if (feed) setAlerts(feed);
+    }).catch(() => {});
+  }, []);
+
+  // Keyboard shortcut Ctrl+K or / to search
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
+        e.preventDefault();
+        setShowSearchModal(true);
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, []);
+
+  useEffect(() => {
+    if (showSearchModal) {
+      setTimeout(() => searchInputRef.current?.focus(), 50);
+    }
+  }, [showSearchModal]);
+
+  const handleSearchChange = async (q: string) => {
+    setSearchQuery(q);
+    if (!q.trim()) {
+      setSearchResults([]);
+      return;
+    }
+    setIsSearching(true);
+    try {
+      const res = await quickSearchPatients(q);
+      setSearchResults(res);
+    } catch {
+      setSearchResults([]);
+    } finally {
+      setIsSearching(false);
+    }
+  };
+
+  // Nav items for Patient Portal (Minimal, Focused on Vitals, Care Team & Prescriptions)
+  const patientNavItems = [
+    {
+      path: `/patients/${patientId}?role=patient`,
+      icon: LayoutGrid,
+      tooltip: 'My Cardiovascular Twin & Vitals',
+      exact: true,
+    },
+    {
+      path: `/patients/${patientId}/signals?role=patient`,
+      icon: Activity,
+      tooltip: 'Continuous Wearable Inflow (1 Hz)',
+    },
+    {
+      path: '/roster',
+      icon: Stethoscope,
+      tooltip: 'Switch to Doctor CCU Portal',
+    },
+  ];
+
+  // Nav items for Clinician CCU Portal (Full Clinical Command Center)
+  const doctorNavItems = [
+    {
+      path: '/doctor/roster',
+      icon: Calendar,
+      tooltip: 'Crisis Surveillance Roster',
+    },
+    {
+      path: `/doctor/patients/${patientId}`,
+      icon: Activity,
+      tooltip: 'Windkessel Biophysics ODE Model',
+      exact: true,
+    },
+    {
+      path: '/doctor/nursing-desk',
+      icon: Stethoscope,
+      tooltip: 'CCU Nursing Desk & Handover',
+    },
+    {
+      path: '/doctor/cath-lab-triage',
+      icon: ShieldAlert,
+      tooltip: 'Cath Lab Triage Queue',
+    },
+    {
+      path: `/doctor/patients/${patientId}/signals`,
+      icon: FlaskConical,
+      tooltip: 'Continuous Tonometry Signals',
+    },
+    {
+      path: `/doctor/patients/${patientId}/explanation`,
+      icon: BrainCircuit,
+      tooltip: 'SHAP Feature Causality',
+    },
+    {
+      path: `/doctor/patients/${patientId}/scenarios`,
+      icon: GitFork,
+      tooltip: 'Countermeasure Simulations',
+    },
+    {
+      path: '/doctor/datasheet',
+      icon: ShieldCheck,
+      tooltip: 'CDSCO Regulatory Datasheet',
+    },
+    {
+      path: '/doctor/audit-vault',
+      icon: Lock,
+      tooltip: 'CDSCO Immutable Audit Vault',
+    },
+  ];
+
+  const navItems = isPatientMode ? patientNavItems : doctorNavItems;
+  const activeAlertCount = alerts.filter((a) => a.status === 'ACTIVE').length;
 
   return (
-    <aside
-      className={`fixed left-0 top-0 h-full w-64 z-50 flex flex-col justify-between p-4 select-none border-r transition-colors duration-300 ${
-        isDark
-          ? 'bg-[#0b111c]/85 border-white/[0.08] text-slate-200 shadow-[4px_0_30px_rgba(0,0,0,0.5)]'
-          : 'bg-white/70 border-white/60 text-[#111e1d] shadow-[4px_0_24px_-4px_rgba(11,42,60,0.05)]'
-      }`}
-      style={{
-        backdropFilter: 'blur(28px) saturate(190%)',
-      }}
-    >
-      <div className="flex flex-col gap-4 overflow-y-auto max-h-[calc(100vh-190px)] pr-1">
-        {/* Logo Branding */}
-        <Link to="/" className="flex items-center gap-3 px-2 pt-1.5 group no-underline">
-          <div
-            className={`relative flex items-center justify-center w-10 h-10 rounded-xl transition-transform group-hover:scale-105 shadow-lg ${
-              isDark
-                ? 'bg-gradient-to-br from-cyan-500 to-blue-600 shadow-cyan-500/25'
-                : 'bg-gradient-to-br from-[#00666f] to-[#00818c] shadow-[#00666f]/30'
-            }`}
+    <>
+      {/* ========================================================================= */}
+      {/* EXACT SLIM MINIMAL VERTICAL RAIL (MATCHING REFERENCE DESIGN)              */}
+      {/* ========================================================================= */}
+      <aside className="w-[74px] shrink-0 min-h-screen bg-white flex flex-col items-center justify-between py-4 border-r border-slate-200/70 shadow-[2px_0_20px_rgba(0,0,0,0.02)] z-40 fixed left-0 top-0 select-none font-sans">
+        {/* Top: Caduceus Emblem + Role Badge + Search */}
+        <div className="flex flex-col items-center gap-3 w-full">
+          {/* Medical Caduceus Emblem */}
+          <Link
+            to={isPatientMode ? `/patients/${patientId}?role=patient` : '/roster'}
+            className="w-10 h-10 flex items-center justify-center text-[#1d5bf0] hover:scale-105 transition-transform"
+            title="CardioTwin Home"
           >
-            <HeartPulse className="w-5 h-5 text-white animate-pulse" />
-            <span className="absolute -top-1 -right-1 w-2.5 h-2.5 rounded-full bg-emerald-400 border-2 border-[#0b111c]" />
-          </div>
-          <div className="flex flex-col">
-            <div className="flex items-center gap-1.5">
-              <span
-                className={`text-[20px] font-bold leading-none tracking-tight ${
-                  isDark ? 'text-white' : 'text-[#111e1d]'
-                }`}
-                style={{ fontFamily: 'Plus Jakarta Sans', letterSpacing: '-0.02em' }}
-              >
-                Cardio<span className={isDark ? 'text-cyan-400' : 'text-[#00666f]'}>Twin</span>
-              </span>
-              <span
-                className={`text-[9px] font-mono px-1.5 py-0.5 rounded font-bold ${
-                  isDark ? 'bg-cyan-500/20 text-cyan-300 border border-cyan-500/30' : 'bg-[#e0f1ef] text-[#00666f]'
-                }`}
-              >
-                v4.8b
-              </span>
-            </div>
-            <span
-              className={`text-[10px] font-semibold tracking-widest uppercase mt-1 ${
-                isDark ? 'text-slate-400' : 'text-[#3d494a]/80'
-              }`}
-              style={{ fontFamily: 'Inter', letterSpacing: '0.06em' }}
-            >
-              Physiological AI Desk
-            </span>
-          </div>
-        </Link>
+            <svg viewBox="0 0 40 40" className="w-8 h-8 fill-current">
+              <path d="M20 3 C19.2 3 18.5 3.7 18.5 4.5 L18.5 7.2 C15.8 7.5 13.5 9 12 11.2 C10.5 13.4 10.3 16.3 11.5 18.7 C12.2 20.1 13.5 21.2 15 21.8 L15 23 C13.2 23.8 11.8 25.3 11.2 27.2 C10.6 29.1 10.9 31.2 12.1 32.8 C13.3 34.4 15.2 35.4 17.2 35.7 L17.2 37 C17.2 37.8 17.9 38.5 18.7 38.5 C19.5 38.5 20.2 37.8 20.2 37 L20.2 35.7 C22.2 35.4 24.1 34.4 25.3 32.8 C26.5 31.2 26.8 29.1 26.2 27.2 C25.6 25.3 24.2 23.8 22.4 23 L22.4 21.8 C23.9 21.2 25.2 20.1 25.9 18.7 C27.1 16.3 26.9 13.4 25.4 11.2 C23.9 9 21.6 7.5 18.9 7.2 L18.9 4.5 C18.9 3.7 18.2 3 17.4 3 Z M17.4 9.2 C19.6 9.4 21.6 10.6 22.8 12.3 C24 14.1 24.1 16.3 23.2 18.2 C22.7 19.3 21.8 20.2 20.6 20.6 L17.4 20.6 C16.2 20.2 15.3 19.3 14.8 18.2 C13.9 16.3 14 14.1 15.2 12.3 C16.4 10.6 18.4 9.4 20.6 9.2 Z M18.5 24 L20.5 24 C22.1 24.3 23.5 25.4 24.1 26.9 C24.7 28.4 24.4 30.1 23.4 31.4 C22.4 32.7 20.8 33.5 19.2 33.7 L18.5 33.7 C16.9 33.5 15.3 32.7 14.3 31.4 C13.3 30.1 13 28.4 13.6 26.9 C14.2 25.4 15.6 24.3 17.2 24 Z" />
+            </svg>
+          </Link>
 
-        {/* Active Patient Pill Banner */}
-        {activePatientId && (
-          <div
-            className={`p-3 rounded-2xl border transition-all ${
-              isDark
-                ? 'bg-[#0f192b]/80 border-cyan-500/20 shadow-[0_4px_20px_rgba(0,0,0,0.3)]'
-                : 'bg-gradient-to-br from-[#e2f1ef]/70 to-[#cce2f8]/40 border-[#00666f]/15'
+          {/* Role Indicator Pill */}
+          <button
+            type="button"
+            onClick={() => {
+              if (isPatientMode) {
+                navigate('/roster');
+              } else {
+                navigate(`/patients/${patientId}?role=patient`);
+              }
+            }}
+            className={`px-2 py-0.5 rounded-full text-[10px] font-mono font-bold transition-all shadow-2xs hover:scale-105 cursor-pointer ${
+              isPatientMode
+                ? 'bg-blue-50 text-[#1d5bf0] border border-blue-200'
+                : 'bg-indigo-50 text-indigo-700 border border-indigo-200'
             }`}
+            title={isPatientMode ? 'Active: Patient Portal. Click to switch to Doctor' : 'Active: Doctor CCU. Click to switch to Patient'}
           >
-            <div className="flex items-center justify-between mb-1.5">
-              <span
-                className={`text-[10px] font-bold uppercase tracking-wider flex items-center gap-1.5 ${
-                  isDark ? 'text-cyan-400' : 'text-[#00666f]'
-                }`}
-              >
-                <span
-                  className={`w-1.5 h-1.5 rounded-full animate-ping ${
-                    isDark ? 'bg-cyan-400' : 'bg-[#00666f]'
-                  }`}
-                />
-                Active Subject
-              </span>
-              <span
-                className={`text-[10px] font-mono font-bold px-1.5 py-0.5 rounded ${
-                  isDark ? 'bg-cyan-500/20 text-cyan-300' : 'bg-white/80 text-[#00666f]'
-                }`}
-              >
-                {activePatientId}
-              </span>
-            </div>
-            <div className="flex items-center justify-between text-[12px]">
-              <span className={`font-semibold truncate ${isDark ? 'text-white' : 'text-[#111e1d]'}`}>
-                {activePatientId === 'CT-3092' ? 'Ramesh Sharma' : activePatientId === 'CT-4105' ? 'Priya Nair' : activePatientId === 'CT-1088' ? 'Anand Kulkarni' : 'Cohort Patient'}
-              </span>
-              <Link
-                to="/roster"
-                className={`text-[11px] font-medium transition-colors ${
-                  isDark ? 'text-cyan-400 hover:text-cyan-300' : 'text-[#00666f] hover:underline'
-                }`}
-              >
-                Switch
-              </Link>
-            </div>
-          </div>
-        )}
+            {isPatientMode ? 'PATIENT' : 'DOCTOR'}
+          </button>
 
-        {/* Navigation Section 1: Patient Core */}
-        <nav className="flex flex-col gap-1">
-          <div className="px-3 pt-2 pb-1">
-            <span
-              className={`text-[10px] font-bold uppercase tracking-wider ${
-                isDark ? 'text-slate-400' : 'text-[#3d494a]/80'
-              }`}
-            >
-              Diagnostic Vectors
+          {/* Search Button in Soft Rounded Box */}
+          <button
+            type="button"
+            onClick={() => setShowSearchModal(true)}
+            className="w-10 h-10 rounded-xl bg-slate-50 hover:bg-slate-100 flex items-center justify-center text-slate-400 hover:text-slate-700 transition-colors border border-slate-200/50 shadow-2xs group relative"
+            title="Search Patients (Ctrl+K)"
+          >
+            <Search className="w-4 h-4" />
+            <span className="absolute left-14 bg-slate-900 text-white text-[11px] font-medium px-2 py-1 rounded-md whitespace-nowrap opacity-0 pointer-events-none group-hover:opacity-100 transition-opacity z-50 shadow-md">
+              Quick Search (Ctrl+K)
             </span>
-          </div>
+          </button>
+        </div>
 
-          {resolvedNavItems.map((item) => {
+        {/* Center: Clean Navigation Action Icons */}
+        <div className="flex flex-col items-center gap-3 w-full my-auto py-2">
+          {navItems.map((item, idx) => {
             const Icon = item.icon;
+            const isActive = item.exact
+              ? location.pathname === item.path || (location.pathname + location.search) === item.path
+              : location.pathname.startsWith(item.path.split('?')[0]);
+
             return (
               <NavLink
-                key={item.path}
-                to={item.resolvedPath}
-                className={({ isActive }) =>
-                  `flex items-center justify-between px-3 py-2 rounded-xl text-[13px] font-medium transition-all group ${
-                    isActive
-                      ? isDark
-                        ? 'bg-gradient-to-r from-cyan-500/25 to-blue-500/20 text-white border border-cyan-400/35 shadow-[0_4px_16px_rgba(0,242,254,0.15)]'
-                        : 'bg-[#00666f] text-white shadow-md'
-                      : isDark
-                      ? 'text-slate-300 hover:text-white hover:bg-white/[0.05]'
-                      : 'text-[#3d494a] hover:text-[#111e1d] hover:bg-black/5'
-                  }`
-                }
-              >
-                {({ isActive }) => (
-                  <>
-                    <div className="flex items-center gap-2.5">
-                      <Icon
-                        className={`w-4 h-4 transition-transform group-hover:scale-110 ${
-                          isActive
-                            ? 'text-cyan-300'
-                            : isDark
-                            ? 'text-slate-400 group-hover:text-cyan-300'
-                            : 'text-[#00666f]'
-                        }`}
-                      />
-                      <span className="tracking-tight">{item.label}</span>
-                    </div>
-
-                    {item.badge && (
-                      <span
-                        className={`text-[9px] font-bold px-1.5 py-0.5 rounded-full tracking-wider uppercase font-mono ${
-                          isActive
-                            ? 'bg-white/20 text-white'
-                            : isDark
-                            ? 'bg-slate-800 text-slate-300 border border-white/5'
-                            : 'bg-[#e2f1ef] text-[#00666f]'
-                        }`}
-                      >
-                        {item.badge}
-                      </span>
-                    )}
-
-                    {isActive && (
-                      <span className="w-1.5 h-1.5 rounded-full bg-cyan-400 shadow-[0_0_8px_#00F2FE]" />
-                    )}
-                  </>
-                )}
-              </NavLink>
-            );
-          })}
-        </nav>
-
-        {/* Navigation Section 2: Clinical Workflow */}
-        <nav className="flex flex-col gap-1 pt-2 border-t border-white/[0.08]">
-          <div className="px-3 pt-1 pb-1">
-            <span
-              className={`text-[10px] font-bold uppercase tracking-wider ${
-                isDark ? 'text-slate-400' : 'text-[#3d494a]/80'
-              }`}
-            >
-              Action Stations
-            </span>
-          </div>
-
-          {recipientItems.map((item) => {
-            const Icon = item.icon;
-            return (
-              <NavLink
-                key={item.path}
+                key={idx}
                 to={item.path}
-                className={({ isActive }) =>
-                  `flex items-center justify-between px-3 py-2 rounded-xl text-[13px] font-medium transition-all group ${
-                    isActive
-                      ? isDark
-                        ? 'bg-gradient-to-r from-cyan-500/25 to-blue-500/20 text-white border border-cyan-400/35 shadow-[0_4px_16px_rgba(0,242,254,0.15)]'
-                        : 'bg-[#00666f] text-white shadow-md'
-                      : isDark
-                      ? 'text-slate-300 hover:text-white hover:bg-white/[0.05]'
-                      : 'text-[#3d494a] hover:text-[#111e1d] hover:bg-black/5'
-                  }`
-                }
+                className={`w-11 h-11 rounded-2xl flex items-center justify-center transition-all group relative ${
+                  isActive
+                    ? 'bg-[#e5efff] text-[#1d5bf0] shadow-xs scale-105 font-bold'
+                    : 'text-slate-400 hover:text-slate-700 hover:bg-slate-50'
+                }`}
               >
-                {({ isActive }) => (
-                  <>
-                    <div className="flex items-center gap-2.5">
-                      <Icon
-                        className={`w-4 h-4 transition-transform group-hover:scale-110 ${
-                          isActive
-                            ? 'text-cyan-300'
-                            : isDark
-                            ? 'text-slate-400 group-hover:text-cyan-300'
-                            : 'text-[#00666f]'
-                        }`}
-                      />
-                      <span className="tracking-tight">{item.label}</span>
-                    </div>
-
-                    {item.badge && (
-                      <span
-                        className={`text-[9px] font-bold px-1.5 py-0.5 rounded-full tracking-wider uppercase font-mono ${
-                          isActive
-                            ? 'bg-white/20 text-white'
-                            : item.path === '/cath-lab-triage'
-                            ? isDark
-                              ? 'bg-rose-500/20 text-rose-300 border border-rose-500/30'
-                              : 'bg-purple-100 text-purple-900'
-                            : isDark
-                            ? 'bg-slate-800 text-slate-300'
-                            : 'bg-[#e2f1ef] text-[#00666f]'
-                        }`}
-                      >
-                        {item.badge}
-                      </span>
-                    )}
-
-                    {isActive && (
-                      <span className="w-1.5 h-1.5 rounded-full bg-cyan-400 shadow-[0_0_8px_#00F2FE]" />
-                    )}
-                  </>
-                )}
+                <Icon className="w-4 h-4" />
+                {/* Minimal Flyout Tooltip */}
+                <span className="absolute left-14 bg-slate-900 text-white text-[11px] font-semibold px-2.5 py-1 rounded-md whitespace-nowrap opacity-0 pointer-events-none group-hover:opacity-100 transition-opacity z-50 shadow-md">
+                  {item.tooltip}
+                </span>
               </NavLink>
             );
           })}
-        </nav>
-      </div>
-
-      {/* Workstation Engine Telemetry Card */}
-      <div
-        className={`p-3.5 rounded-2xl border flex flex-col gap-2.5 transition-all ${
-          isDark
-            ? 'bg-[#0f192b]/80 border-white/[0.08] shadow-[0_8px_24px_rgba(0,0,0,0.4)]'
-            : 'bg-white/65 border-white/80 shadow-[0_4px_16px_rgba(11,42,60,0.04)]'
-        }`}
-      >
-        <div className="flex items-center justify-between">
-          <span
-            className={`text-[10px] font-bold uppercase tracking-widest ${
-              isDark ? 'text-slate-400' : 'text-[#3d494a]'
-            }`}
-          >
-            Engine Grounding
-          </span>
-          <span
-            className={`inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full text-[10px] font-bold font-mono ${
-              isDark
-                ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30'
-                : 'bg-[#2FBF9B]/15 text-[#196C57]'
-            }`}
-          >
-            <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
-            LIVE TWIN
-          </span>
         </div>
 
-        {/* Real-time EKG animation SVG line */}
-        <div
-          className={`w-full h-5 overflow-hidden rounded flex items-center px-1 ${
-            isDark ? 'bg-cyan-500/10' : 'bg-[#00666f]/5'
-          }`}
-        >
-          <svg className="w-full h-full" viewBox="0 0 160 20" preserveAspectRatio="none">
-            <path
-              d="M 0 10 L 25 10 L 30 4 L 35 16 L 40 10 L 55 10 L 60 2 L 65 18 L 70 10 L 95 10 L 100 5 L 105 15 L 110 10 L 135 10 L 140 3 L 145 17 L 150 10 L 160 10"
-              fill="none"
-              stroke={isDark ? '#00F2FE' : '#00666f'}
-              strokeWidth="1.8"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              className="animate-ecg"
+        {/* Bottom: Bell Notifications, Audio Toggle, Portal Avatar */}
+        <div className="flex flex-col items-center gap-3 w-full">
+          {/* Notifications Bell */}
+          <button
+            type="button"
+            onClick={() => setShowAlertsPopover((prev) => !prev)}
+            className="w-10 h-10 rounded-xl hover:bg-slate-50 text-slate-400 hover:text-slate-700 flex items-center justify-center transition-colors relative group"
+            title="Clinical Alerts"
+          >
+            <Bell className="w-4 h-4" />
+            {activeAlertCount > 0 && (
+              <span className="w-2 h-2 rounded-full bg-rose-500 absolute top-2 right-2.5 animate-pulse" />
+            )}
+            <span className="absolute left-14 bg-slate-900 text-white text-[11px] font-medium px-2 py-1 rounded-md whitespace-nowrap opacity-0 pointer-events-none group-hover:opacity-100 transition-opacity z-50 shadow-md">
+              Alerts Feed ({activeAlertCount})
+            </span>
+          </button>
+
+          {/* Audio Telemetry Mute Toggle */}
+          <button
+            type="button"
+            onClick={toggleMute}
+            className={`w-10 h-10 rounded-xl flex items-center justify-center transition-colors group relative ${
+              isMuted
+                ? 'text-slate-300 hover:bg-slate-50'
+                : 'text-[#1d5bf0] bg-blue-50/80 shadow-2xs'
+            }`}
+            title={isMuted ? 'Telemetry Audio: Muted' : 'Telemetry Audio: Active'}
+          >
+            {isMuted ? <VolumeX className="w-4 h-4" /> : <Volume2 className="w-4 h-4" />}
+            <span className="absolute left-14 bg-slate-900 text-white text-[11px] font-medium px-2 py-1 rounded-md whitespace-nowrap opacity-0 pointer-events-none group-hover:opacity-100 transition-opacity z-50 shadow-md">
+              {isMuted ? 'Unmute Audio Beep' : 'Mute Audio Beep'}
+            </span>
+          </button>
+
+          {/* Avatar (Click to switch portal or view profile) */}
+          <div
+            onClick={() => {
+              if (isPatientMode) {
+                navigate('/roster');
+              } else {
+                navigate(`/patients/${patientId}?role=patient`);
+              }
+            }}
+            className="w-10 h-10 rounded-full overflow-hidden border-2 border-white shadow-xs cursor-pointer hover:scale-105 transition-transform"
+            title={
+              isPatientMode
+                ? 'Jacqueline Delaney (Patient) - Click to Switch to Doctor Portal'
+                : 'Dr. Will Banner (Physician) - Click to Switch to Patient Portal'
+            }
+          >
+            <img
+              src={
+                isPatientMode
+                  ? '/assets/inspiration/patient_jacqueline.jpg'
+                  : '/assets/inspiration/doctor_will.jpg'
+              }
+              alt="Profile Avatar"
+              className="w-full h-full object-cover"
             />
-          </svg>
+          </div>
         </div>
+      </aside>
 
-        <div
-          className={`flex items-center justify-between text-[11px] pt-1 border-t ${
-            isDark ? 'border-white/[0.08] text-slate-300' : 'border-black/5 text-[#445f73]'
-          }`}
-        >
-          <span className="font-medium">Windkessel 3-Elem</span>
-          <span className={`font-mono font-bold ${isDark ? 'text-cyan-400' : 'text-[#00666f]'}`}>
-            &lt; 38ms
-          </span>
-        </div>
+      {/* ========================================================================= */}
+      {/* QUICK PATIENT SEARCH MODAL (CMD+K / SEARCH BUTTON)                         */}
+      {/* ========================================================================= */}
+      {showSearchModal && (
+        <div className="fixed inset-0 z-50 bg-black/35 backdrop-blur-xs flex items-start justify-center pt-24 p-4">
+          <div className="bg-white rounded-3xl p-5 max-w-lg w-full shadow-2xl border border-slate-100 animate-in fade-in zoom-in-95">
+            <div className="flex items-center justify-between pb-3 border-b border-slate-100 mb-3">
+              <div className="flex items-center gap-2 text-slate-800 font-bold text-[14px]">
+                <Search className="w-4 h-4 text-[#1d5bf0]" />
+                <span>Search Patient Cohort &amp; Telemetry</span>
+              </div>
+              <button
+                onClick={() => setShowSearchModal(false)}
+                className="w-7 h-7 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-500 flex items-center justify-center transition-colors"
+              >
+                <X className="w-3.5 h-3.5" />
+              </button>
+            </div>
 
-        <div
-          className={`flex items-center justify-between text-[11px] ${
-            isDark ? 'text-slate-300' : 'text-[#445f73]'
-          }`}
-        >
-          <span className="font-medium">LightGBM Fast-Twin</span>
-          <span className="font-mono text-emerald-400 font-bold">100% Fit</span>
+            <div className="relative mb-3">
+              <input
+                ref={searchInputRef}
+                type="text"
+                value={searchQuery}
+                onChange={(e) => handleSearchChange(e.target.value)}
+                placeholder="Type patient name, ID (e.g. CT-3092), or condition..."
+                className="w-full bg-slate-50 rounded-2xl pl-4 pr-10 py-3 text-[13px] font-medium text-slate-800 placeholder-slate-400 border border-slate-200 focus:outline-none focus:ring-2 focus:ring-[#1d5bf0]/30 transition-all"
+              />
+              {isSearching && (
+                <div className="w-4 h-4 border-2 border-[#1d5bf0] border-t-transparent rounded-full animate-spin absolute right-3.5 top-3.5" />
+              )}
+            </div>
+
+            {/* Results List */}
+            <div className="flex flex-col gap-1.5 max-h-72 overflow-y-auto">
+              {searchResults.length > 0 ? (
+                searchResults.map((p) => (
+                  <div
+                    key={p.patient_id}
+                    onClick={() => {
+                      navigate(`/doctor/patients/${p.patient_id}`);
+                      setShowSearchModal(false);
+                    }}
+                    className="flex items-center justify-between p-3 rounded-2xl hover:bg-slate-50 cursor-pointer border border-transparent hover:border-slate-100 transition-all"
+                  >
+                    <div className="flex items-center gap-3">
+                      <div className="w-9 h-9 rounded-xl bg-blue-50 text-[#1d5bf0] font-bold text-[12px] flex items-center justify-center font-mono">
+                        {p.patient_id.slice(-4)}
+                      </div>
+                      <div>
+                        <h4 className="text-[13px] font-bold text-slate-900 leading-tight">
+                          {p.name}
+                        </h4>
+                        <p className="text-[11px] text-slate-500">
+                          {p.age}y {p.sex} &bull; {p.city}
+                        </p>
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <RiskBadge tier={p.risk_tier} />
+                      <ArrowRight className="w-4 h-4 text-slate-300" />
+                    </div>
+                  </div>
+                ))
+              ) : searchQuery ? (
+                <p className="text-center text-slate-400 text-[12px] py-4">
+                  No patients matching &ldquo;{searchQuery}&rdquo;
+                </p>
+              ) : (
+                <div className="py-2 text-[12px] text-slate-400 flex flex-col gap-1">
+                  <span className="font-semibold text-slate-600">Featured CCU patients:</span>
+                  <button
+                    onClick={() => {
+                      navigate('/doctor/patients/CT-0042');
+                      setShowSearchModal(false);
+                    }}
+                    className="text-left text-[#1d5bf0] hover:underline"
+                  >
+                    &bull; CT-0042 &ndash; Ritu Mishra (Critical 98.0%)
+                  </button>
+                  <button
+                    onClick={() => {
+                      navigate('/doctor/patients/CT-0009');
+                      setShowSearchModal(false);
+                    }}
+                    className="text-left text-[#1d5bf0] hover:underline"
+                  >
+                    &bull; CT-0009 &ndash; Ramesh Bhat (High 73.9%)
+                  </button>
+                  <button
+                    onClick={() => {
+                      navigate('/doctor/patients/CT-3092');
+                      setShowSearchModal(false);
+                    }}
+                    className="text-left text-[#1d5bf0] hover:underline"
+                  >
+                    &bull; CT-3092 &ndash; Rajesh Verma (Elevated 58.0%)
+                  </button>
+                </div>
+              )}
+            </div>
+          </div>
         </div>
-      </div>
-    </aside>
+      )}
+
+      {/* ========================================================================= */}
+      {/* ALERTS FEED FLYOUT POPOVER                                                */}
+      {/* ========================================================================= */}
+      {showAlertsPopover && (
+        <div className="fixed left-20 bottom-12 z-50 bg-white rounded-3xl p-5 shadow-2xl border border-slate-100 w-80 animate-in fade-in slide-in-from-left-4">
+          <div className="flex items-center justify-between pb-2 border-b border-slate-100 mb-2">
+            <span className="text-[13px] font-bold text-slate-900 flex items-center gap-1.5">
+              <Bell className="w-3.5 h-3.5 text-[#1d5bf0]" />
+              Physician Alerts
+            </span>
+            <button
+              onClick={() => setShowAlertsPopover(false)}
+              className="text-slate-400 hover:text-slate-700 text-[12px]"
+            >
+              ✕
+            </button>
+          </div>
+
+          <div className="flex flex-col gap-2 max-h-64 overflow-y-auto pr-1">
+            {alerts.length > 0 ? (
+              alerts.slice(0, 4).map((alt) => (
+                <div
+                  key={alt.id}
+                  className="bg-slate-50/80 rounded-2xl p-2.5 border border-slate-100 text-[11px]"
+                >
+                  <div className="flex items-center justify-between font-bold text-slate-900">
+                    <span>Patient {alt.patient_id} ({alt.stage_label})</span>
+                    <span className="text-rose-600 font-mono text-[10px]">CRITICAL</span>
+                  </div>
+                  <p className="text-slate-600 text-[10px] mt-0.5 line-clamp-2">
+                    {alt.primary_concern || alt.trigger_summary}
+                  </p>
+                </div>
+              ))
+            ) : (
+              <p className="text-slate-400 text-center py-4 text-[11px]">
+                No active alerts in queue
+              </p>
+            )}
+          </div>
+        </div>
+      )}
+    </>
   );
 }

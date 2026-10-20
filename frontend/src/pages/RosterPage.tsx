@@ -80,10 +80,10 @@ export default function RosterPage() {
         <div>
           <div className="flex items-center gap-2 mb-1.5">
             <span
-              className="text-[11px] font-bold tracking-widest uppercase text-[#00666f] flex items-center gap-1.5"
+              className="text-[11px] font-bold tracking-widest uppercase text-[#1d5bf0] flex items-center gap-1.5"
               style={{ fontFamily: 'Inter', letterSpacing: '0.06em' }}
             >
-              <span className="w-2 h-2 rounded-full bg-[#00666f] animate-pulse" />
+              <span className="w-2 h-2 rounded-full bg-[#1d5bf0] animate-pulse" />
               Surveillance Command Desk
             </span>
             <span className="w-1 h-1 rounded-full bg-[#3d494a]/30" />
@@ -101,7 +101,7 @@ export default function RosterPage() {
 
         <div className="flex items-center gap-3">
           <div className="relative">
-            <span className="material-symbols-outlined absolute left-3 top-2.5 text-[18px] text-[#00666f] pointer-events-none">
+            <span className="material-symbols-outlined absolute left-3 top-2.5 text-[18px] text-[#1d5bf0] pointer-events-none">
               search
             </span>
             <input
@@ -109,7 +109,7 @@ export default function RosterPage() {
               placeholder="Search cohort by name/ID..."
               value={search}
               onChange={e => setSearch(e.target.value)}
-              className="pl-9 pr-4 py-2 rounded-xl text-[13px] bg-white/80 focus:bg-white focus:outline-none focus:ring-2 focus:ring-[#00666f]/20 transition-all shadow-xs border border-white/80"
+              className="pl-9 pr-4 py-2 rounded-xl text-[13px] bg-white/80 focus:bg-white focus:outline-none focus:ring-2 focus:ring-[#1d5bf0]/20 transition-all shadow-xs border border-white/80"
               style={{ fontFamily: 'Inter', width: '240px' }}
             />
             {search && (
@@ -125,11 +125,11 @@ export default function RosterPage() {
 
           <button
             onClick={() => refetch()}
-            className="flex items-center gap-2 px-4 py-2 rounded-xl text-[13px] font-semibold transition-all shadow-xs bg-white/80 hover:bg-white text-[#111e1d] border border-white hover:border-[#00666f]/20 active:scale-95"
+            className="flex items-center gap-2 px-4 py-2 rounded-xl text-[13px] font-semibold transition-all shadow-xs bg-white/80 hover:bg-white text-[#111e1d] border border-white hover:border-[#1d5bf0]/20 active:scale-95"
             style={{ fontFamily: 'Inter' }}
             type="button"
           >
-            <span className="material-symbols-outlined text-[18px] text-[#00666f]">sync</span>
+            <span className="material-symbols-outlined text-[18px] text-[#1d5bf0]">sync</span>
             <span>Refresh Roster</span>
           </button>
         </div>
@@ -149,7 +149,7 @@ export default function RosterPage() {
             >
               <div className="flex items-center justify-between text-[#3d494a]">
                 <span className="text-[12px] font-semibold tracking-wide uppercase text-[#445f73]">Monitored Cohort</span>
-                <div className="w-8 h-8 rounded-lg bg-[#e0f1ef] flex items-center justify-center text-[#00666f]">
+                <div className="w-8 h-8 rounded-lg bg-[#e5efff] flex items-center justify-center text-[#1d5bf0]">
                   <span className="material-symbols-outlined text-[20px]">monitoring</span>
                 </div>
               </div>
@@ -215,16 +215,16 @@ export default function RosterPage() {
 
             {/* Early Warning Lead Time Card */}
             <div
-              className="glass-card p-5 rounded-2xl flex flex-col justify-between border-l-4 border-l-[#00666f]"
+              className="glass-card p-5 rounded-2xl flex flex-col justify-between border-l-4 border-l-[#1d5bf0]"
             >
-              <div className="flex items-center justify-between text-[#00666f]">
+              <div className="flex items-center justify-between text-[#1d5bf0]">
                 <span className="text-[12px] font-semibold tracking-wide uppercase">Average Lead Time</span>
-                <div className="w-8 h-8 rounded-lg bg-[#e2f1ef] flex items-center justify-center text-[#00666f]">
+                <div className="w-8 h-8 rounded-lg bg-[#e5efff] flex items-center justify-center text-[#1d5bf0]">
                   <span className="material-symbols-outlined text-[20px]">timelapse</span>
                 </div>
               </div>
               <div className="mt-4 flex items-baseline gap-2">
-                <span className="text-[34px] font-bold text-[#00666f] font-mono tracking-tight">
+                <span className="text-[34px] font-bold text-[#1d5bf0] font-mono tracking-tight">
                   {data.avg_warning_window_hours}h
                 </span>
                 <span className="text-[11px] text-[#196C57] font-semibold bg-[#2FBF9B]/15 px-2.5 py-0.5 rounded-full font-mono">
@@ -247,7 +247,7 @@ export default function RosterPage() {
                   onClick={() => setSelectedTier(opt.value)}
                   className={`px-3.5 py-1.5 rounded-xl text-[12px] font-semibold transition-all ${
                     selectedTier === opt.value
-                      ? 'bg-[#00666f] text-white shadow-xs'
+                      ? 'bg-[#1d5bf0] text-white shadow-xs'
                       : 'bg-white/70 text-[#3d494a] hover:bg-white hover:text-[#111e1d]'
                   }`}
                   style={{ fontFamily: 'Inter' }}
@@ -294,7 +294,7 @@ export default function RosterPage() {
             <div className="overflow-x-auto">
               <table className="w-full text-left border-collapse">
                 <thead>
-                  <tr className="bg-[#eef7f6] text-[#445f73] text-[11px] uppercase tracking-wider font-semibold border-b border-[#bcc9cb]/30">
+                  <tr className="bg-slate-50 text-[#445f73] text-[11px] uppercase tracking-wider font-semibold border-b border-slate-200/60">
                     <th className="py-3.5 px-6">Patient Subject</th>
                     <th className="py-3.5 px-4">Triage Tier</th>
                     <th className="py-3.5 px-4 text-center">6h Crisis Risk</th>
@@ -304,7 +304,7 @@ export default function RosterPage() {
                     <th className="py-3.5 px-6 text-right">Clinical Actions</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-[#bcc9cb]/20 text-[13px]">
+                <tbody className="divide-y divide-slate-100 text-[13px]">
                   {processedItems.length > 0 ? (
                     processedItems.map(patient => {
                       const isCritical = patient.risk_tier === 'CRITICAL';
@@ -314,8 +314,8 @@ export default function RosterPage() {
                       return (
                         <tr
                           key={patient.patient_id}
-                          onClick={() => navigate(`/patients/${patient.patient_id}`)}
-                          className="hover:bg-white/90 transition-colors cursor-pointer group"
+                          onClick={() => navigate(`/doctor/patients/${patient.patient_id}`)}
+                          className="hover:bg-slate-50/80 transition-colors cursor-pointer group"
                         >
                           <td className="py-4 px-6">
                             <div className="flex items-center gap-3">
@@ -323,14 +323,14 @@ export default function RosterPage() {
                                 className={`w-10 h-10 rounded-xl flex items-center justify-center font-bold text-[14px] shrink-0 font-mono transition-transform group-hover:scale-105 ${
                                   isCritical
                                     ? 'bg-red-100 text-[#ba1a1a] border border-red-200'
-                                    : 'bg-[#e2f1ef] text-[#00666f] border border-[#00666f]/15'
+                                    : 'bg-[#e5efff] text-[#1d5bf0] border border-[#1d5bf0]/15'
                                 }`}
                               >
                                 {patient.initials}
                               </div>
                               <div className="flex flex-col">
                                 <div className="flex items-center gap-2">
-                                  <span className="font-semibold text-[#111e1d] group-hover:text-[#00666f] transition-colors">
+                                  <span className="font-semibold text-[#111e1d] group-hover:text-[#1d5bf0] transition-colors">
                                     {patient.name}
                                   </span>
                                   {isCritical && (
@@ -338,7 +338,7 @@ export default function RosterPage() {
                                   )}
                                 </div>
                                 <div className="flex items-center gap-1.5 text-[11px] text-[#445f73]">
-                                  <span className="font-mono font-semibold text-[#00666f]">{patient.patient_id}</span>
+                                  <span className="font-mono font-semibold text-[#1d5bf0]">{patient.patient_id}</span>
                                   <span>•</span>
                                   <span>{patient.age}y {patient.sex}</span>
                                   <span>•</span>
@@ -393,7 +393,7 @@ export default function RosterPage() {
                           {/* Lead Time */}
                           <td className="py-4 px-4">
                             <div className="flex items-center gap-1.5 text-[#111e1d] font-mono text-[12px] bg-white/70 px-2.5 py-1 rounded-lg w-fit border border-gray-100">
-                              <span className="material-symbols-outlined text-[15px] text-[#00666f]">timelapse</span>
+                              <span className="material-symbols-outlined text-[15px] text-[#1d5bf0]">timelapse</span>
                               <span className="font-bold">{patient.days_to_risk}</span>
                             </div>
                           </td>
@@ -416,10 +416,10 @@ export default function RosterPage() {
                               <button
                                 onClick={e => {
                                   e.stopPropagation();
-                                  navigate(`/patients/${patient.patient_id}/scenarios`);
+                                  navigate(`/doctor/patients/${patient.patient_id}/scenarios`);
                                 }}
                                 title="Simulate Countermeasures"
-                                className="p-1.5 rounded-lg bg-white hover:bg-[#eaf4f3] text-[#00666f] border border-gray-200 transition-colors shadow-2xs"
+                                className="p-1.5 rounded-lg bg-white hover:bg-blue-50 text-[#1d5bf0] border border-gray-200 transition-colors shadow-2xs"
                                 type="button"
                               >
                                 <span className="material-symbols-outlined text-[17px] block">schema</span>
@@ -429,10 +429,10 @@ export default function RosterPage() {
                               <button
                                 onClick={e => {
                                   e.stopPropagation();
-                                  navigate(`/patients/${patient.patient_id}/signals`);
+                                  navigate(`/doctor/patients/${patient.patient_id}/signals`);
                                 }}
                                 title="View Live Signals & Recalibrate"
-                                className="p-1.5 rounded-lg bg-white hover:bg-[#eaf4f3] text-[#00666f] border border-gray-200 transition-colors shadow-2xs"
+                                className="p-1.5 rounded-lg bg-white hover:bg-blue-50 text-[#1d5bf0] border border-gray-200 transition-colors shadow-2xs"
                                 type="button"
                               >
                                 <span className="material-symbols-outlined text-[17px] block">vital_signs</span>
@@ -442,9 +442,9 @@ export default function RosterPage() {
                               <button
                                 onClick={e => {
                                   e.stopPropagation();
-                                  navigate(`/patients/${patient.patient_id}`);
+                                  navigate(`/doctor/patients/${patient.patient_id}`);
                                 }}
-                                className="px-3 py-1.5 rounded-xl bg-gradient-to-r from-[#00666f] to-[#00818c] text-white font-semibold text-[12px] transition-all shadow-xs hover:scale-[1.02] active:scale-[0.98] inline-flex items-center gap-1"
+                                className="px-3 py-1.5 rounded-xl bg-[#1d5bf0] hover:bg-[#1546b8] text-white font-semibold text-[12px] transition-all shadow-xs hover:scale-[1.02] active:scale-[0.98] inline-flex items-center gap-1"
                                 type="button"
                               >
                                 <span>Inspect Twin</span>
@@ -471,7 +471,7 @@ export default function RosterPage() {
                             setSelectedCity('all');
                             setSearch('');
                           }}
-                          className="mt-3 px-4 py-1.5 rounded-xl bg-[#00666f] text-white text-[12px] font-semibold"
+                          className="mt-3 px-4 py-1.5 rounded-xl bg-[#1d5bf0] text-white text-[12px] font-semibold"
                           type="button"
                         >
                           Reset Filters

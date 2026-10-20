@@ -291,7 +291,7 @@ export default function NursingDeskPage() {
                 </span>
 
                 <Link
-                  to={`/patients/${bed.patient_id}`}
+                  to={`/doctor/patients/${bed.patient_id}`}
                   className="text-[11px] font-bold text-[#00666f] hover:underline flex items-center gap-0.5"
                 >
                   <span>Open Twin</span>

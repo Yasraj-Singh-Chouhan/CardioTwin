@@ -97,7 +97,7 @@ export default function CathLabTriagePage() {
           </div>
 
           <Link
-            to="/patients/CT-3092"
+            to="/doctor/patients/CT-0042"
             className="px-4 py-2.5 rounded-xl bg-gradient-to-r from-[#00666f] to-[#00818c] text-white font-bold text-[12px] shadow-sm hover:brightness-110 transition-all flex items-center gap-1.5"
           >
             <HeartPulse className="w-4 h-4" />
@@ -278,7 +278,7 @@ export default function CathLabTriagePage() {
 
                 <div className="flex items-center gap-2.5">
                   <Link
-                    to={`/patients/${item.patient_id}`}
+                    to={`/doctor/patients/${item.patient_id}`}
                     className="px-4 py-2 rounded-xl bg-white hover:bg-gray-50 border border-gray-200 text-[#111e1d] font-bold text-[12px] shadow-2xs transition-all"
                   >
                     View Digital Twin

@@ -1,54 +1,54 @@
 @import "tailwindcss";
 
 @theme {
-  /* Colors */
-  --color-primary: #00666f;
+  /* Colors - Minimal Clinical Reference Palette */
+  --color-primary: #1d5bf0;
   --color-on-primary: #ffffff;
-  --color-primary-container: #00818c;
-  --color-on-primary-container: #f6feff;
-  --color-primary-fixed: #8df2ff;
-  --color-primary-fixed-dim: #67d6e4;
-  --color-inverse-primary: #67d6e4;
-  --color-secondary: #4c6173;
+  --color-primary-container: #e5efff;
+  --color-on-primary-container: #103487;
+  --color-primary-fixed: #dbeafe;
+  --color-primary-fixed-dim: #bfdbfe;
+  --color-inverse-primary: #93c5fd;
+  --color-secondary: #475569;
   --color-on-secondary: #ffffff;
-  --color-secondary-container: #cce2f8;
-  --color-on-secondary-container: #506578;
-  --color-secondary-fixed: #cfe5fb;
-  --color-secondary-fixed-dim: #b3c9de;
-  --color-tertiary: #445f73;
+  --color-secondary-container: #f1f5f9;
+  --color-on-secondary-container: #334155;
+  --color-secondary-fixed: #e2e8f0;
+  --color-secondary-fixed-dim: #cbd5e1;
+  --color-tertiary: #247953;
   --color-on-tertiary: #ffffff;
-  --color-tertiary-container: #5c788d;
-  --color-on-tertiary-container: #fcfcff;
-  --color-tertiary-fixed: #c9e6fe;
-  --color-tertiary-fixed-dim: #aecae1;
-  --color-error: #ba1a1a;
+  --color-tertiary-container: #dcfce7;
+  --color-on-tertiary-container: #14532d;
+  --color-tertiary-fixed: #bbf7d0;
+  --color-tertiary-fixed-dim: #86efac;
+  --color-error: #ef4444;
   --color-on-error: #ffffff;
-  --color-error-container: #ffdad6;
-  --color-on-error-container: #93000a;
-  --color-surface: #edfcfa;
-  --color-surface-dim: #cedddb;
-  --color-surface-bright: #edfcfa;
+  --color-error-container: #fee2e2;
+  --color-on-error-container: #991b1b;
+  --color-surface: #ffffff;
+  --color-surface-dim: #f8fafc;
+  --color-surface-bright: #ffffff;
   --color-surface-container-lowest: #ffffff;
-  --color-surface-container-low: #e8f7f5;
-  --color-surface-container: #e2f1ef;
-  --color-surface-container-high: #dcebe9;
-  --color-surface-container-highest: #d7e6e4;
-  --color-on-surface: #111e1d;
-  --color-on-surface-variant: #3d494a;
-  --color-inverse-surface: #263332;
-  --color-inverse-on-surface: #e5f4f2;
-  --color-outline: #6d797b;
-  --color-outline-variant: #bcc9cb;
-  --color-surface-variant: #d7e6e4;
-  --color-surface-tint: #006972;
-  --color-background: #edfcfa;
-  --color-on-background: #111e1d;
-  --color-on-primary-fixed: #001f23;
-  --color-on-primary-fixed-variant: #004f56;
-  --color-on-secondary-fixed: #061d2d;
-  --color-on-secondary-fixed-variant: #34495b;
-  --color-on-tertiary-fixed: #001e2f;
-  --color-on-tertiary-fixed-variant: #2e4a5d;
+  --color-surface-container-low: #f8fafc;
+  --color-surface-container: #f1f5f9;
+  --color-surface-container-high: #e2e8f0;
+  --color-surface-container-highest: #cbd5e1;
+  --color-on-surface: #0f172a;
+  --color-on-surface-variant: #64748b;
+  --color-inverse-surface: #1e293b;
+  --color-inverse-on-surface: #f8fafc;
+  --color-outline: #94a3b8;
+  --color-outline-variant: #e2e8f0;
+  --color-surface-variant: #f1f5f9;
+  --color-surface-tint: #1d5bf0;
+  --color-background: #edf2f8;
+  --color-on-background: #0f172a;
+  --color-on-primary-fixed: #1e3a8a;
+  --color-on-primary-fixed-variant: #1d4ed8;
+  --color-on-secondary-fixed: #0f172a;
+  --color-on-secondary-fixed-variant: #334155;
+  --color-on-tertiary-fixed: #052e16;
+  --color-on-tertiary-fixed-variant: #166534;
 
   /* Border radius */
   --radius-sm: 0.375rem;
@@ -342,17 +342,76 @@ html.dark [class*="border-[#00666f]"] {
   border-radius: 9999px;
 }
 
-::-webkit-scrollbar-thumb:hover {
-  background: rgba(0, 102, 111, 0.40);
+/* Realistic Cardiac Contraction (Systole/Diastole Lub-Dub Rhythm) */
+@keyframes cardiacPulse {
+  0% {
+    transform: scale(1);
+    filter: drop-shadow(0 0 0 rgba(29, 91, 240, 0));
+  }
+  14% {
+    transform: scale(1.08) translateZ(0);
+    filter: drop-shadow(0 0 24px rgba(29, 91, 240, 0.5));
+  }
+  28% {
+    transform: scale(0.98) translateZ(0);
+  }
+  42% {
+    transform: scale(1.05) translateZ(0);
+    filter: drop-shadow(0 0 14px rgba(29, 91, 240, 0.35));
+  }
+  60% {
+    transform: scale(1) translateZ(0);
+    filter: drop-shadow(0 0 0 rgba(29, 91, 240, 0));
+  }
+  100% {
+    transform: scale(1) translateZ(0);
+    filter: drop-shadow(0 0 0 rgba(29, 91, 240, 0));
+  }
+}
+
+.animate-cardiac-pulse {
+  animation: cardiacPulse 0.85s cubic-bezier(0.21, 0.61, 0.35, 1) infinite;
+  transform-origin: center center;
+  will-change: transform, filter;
+}
+
+/* Concentric Electro-Acoustic Heartwave Rings */
+@keyframes heartwaveExpand {
+  0% {
+    transform: translate(-50%, -50%) scale(0.7);
+    opacity: 0.95;
+    border-color: rgba(29, 91, 240, 0.6);
+  }
+  50% {
+    opacity: 0.6;
+    border-color: rgba(59, 130, 246, 0.4);
+  }
+  100% {
+    transform: translate(-50%, -50%) scale(1.85);
+    opacity: 0;
+    border-color: rgba(147, 197, 253, 0);
+  }
+}
+
+.animate-heartwave-1 {
+  animation: heartwaveExpand 2.4s cubic-bezier(0.15, 0.85, 0.35, 1) infinite;
+}
+
+.animate-heartwave-2 {
+  animation: heartwaveExpand 2.4s cubic-bezier(0.15, 0.85, 0.35, 1) infinite 0.8s;
+}
+
+.animate-heartwave-3 {
+  animation: heartwaveExpand 2.4s cubic-bezier(0.15, 0.85, 0.35, 1) infinite 1.6s;
 }
 
 html, body, #root {
   margin: 0;
   padding: 0;
   height: 100%;
-  background-color: #edfcfa;
+  background-color: #edf2f8;
   font-family: var(--font-sans);
-  color: #111e1d;
+  color: #0f172a;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
