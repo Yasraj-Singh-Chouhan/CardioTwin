@@ -106,7 +106,7 @@
          └───────────────────────┘                     └───────────────────────┘
 ```
 
-> 📐 A detailed architecture diagram (PDF/image) will be added to this repository shortly.
+> 📐 A detailed architecture diagram : (https://drive.google.com/file/d/1Dac3y6nKASWvDqMTlLq0YUQrA-TeDU2o/view?usp=sharing)
 
 ---
 
