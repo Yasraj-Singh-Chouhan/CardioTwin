@@ -42,7 +42,7 @@
 
 | Resource | Link |
 | :--- | :--- |
-| 📹 Demo Video (15–20 min walkthrough) | *Coming soon — link will be updated here* |
+| 📹 Demo Video (15–20 min walkthrough) | https://youtu.be/tNzw6BC7iQ8|
 | 📊 Presentation (PDF/PPT) | https://drive.google.com/file/d/197wTdvUOSFoiPHAQmNtm9P_7LUO6pWT4/view?usp=drive_link |
 
 ---
