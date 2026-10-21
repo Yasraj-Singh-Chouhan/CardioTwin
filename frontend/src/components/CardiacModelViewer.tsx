@@ -9,6 +9,8 @@ interface CardiacModelViewerProps {
   cart?: number; // Compliance (mL/mmHg)
   riskScore?: number;
   className?: string;
+  hideHeader?: boolean;
+  compact?: boolean;
 }
 
 export function CardiacModelViewer({
@@ -19,6 +21,8 @@ export function CardiacModelViewer({
   cart = 0.88,
   riskScore = 82,
   className = '',
+  hideHeader = false,
+  compact = false,
 }: CardiacModelViewerProps) {
   const [activePart, setActivePart] = useState<'aorta' | 'ventricle' | 'microvessels' | null>(null);
 
@@ -33,14 +37,16 @@ export function CardiacModelViewer({
 
   return (
     <div
-      className={`relative rounded-3xl p-5 border transition-all duration-300 glass-card ${
+      className={`relative rounded-2xl transition-all duration-300 ${
+        compact ? 'p-2 border-0 bg-transparent shadow-none' :
         isCrisis
-          ? 'border-red-300/80 bg-red-50/40 shadow-[0_8px_30px_rgba(186,26,26,0.12)]'
-          : 'border-white/90 bg-white/75 shadow-sm'
+          ? 'border border-red-300/80 bg-red-50/40 p-4 shadow-[0_8px_30px_rgba(186,26,26,0.12)] glass-card'
+          : 'border border-white/90 bg-white/75 p-4 shadow-sm glass-card'
       } ${className}`}
     >
       {/* Top Clinical Header */}
-      <div className="flex items-center justify-between mb-4 pb-3 border-b border-black/5">
+      {!hideHeader && (
+        <div className="flex items-center justify-between mb-3 pb-2.5 border-b border-black/5">
         <div className="flex items-center gap-2.5">
           <div
             className="w-8 h-8 rounded-xl flex items-center justify-center shadow-xs"
@@ -83,6 +89,7 @@ export function CardiacModelViewer({
           </span>
         </div>
       </div>
+      )}
 
       {/* Main Cardiac Simulator Canvas */}
       <div className="grid grid-cols-1 md:grid-cols-12 gap-5 items-center">

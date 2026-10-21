@@ -487,7 +487,7 @@ export default function DatasheetPage() {
 
           {/* Cryptographic Audit Proof Modal */}
           {showAuditModal && (
-            <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm p-4">
+            <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/30 backdrop-blur-sm p-4">
               <div
                 className="w-full max-w-xl p-6 rounded-[24px] flex flex-col gap-4 relative animate-in fade-in zoom-in-95 duration-200"
                 style={{

@@ -1,7 +1,7 @@
 """Patients Router: Roster, Comprehensive EHR Profile, and Longitudinal Labs.
 """
 from datetime import datetime, timedelta
-from typing import Optional, List
+from typing import Optional, List, Tuple
 from fastapi import APIRouter, HTTPException, Query, Path
 from app.schemas.patient import (
     PatientListResponse, PatientDetailResponse, PatientSummary, MedicationItem

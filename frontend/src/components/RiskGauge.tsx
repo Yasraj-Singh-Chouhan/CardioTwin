@@ -117,22 +117,27 @@ export default function RiskGauge({ value, tier, size = 230 }: RiskGaugeProps) {
       </svg>
 
       {/* Central Metric Value */}
-      <div className="absolute bottom-1 flex flex-col items-center">
+      <div className="absolute bottom-0 flex flex-col items-center">
         <div className="flex items-baseline leading-none">
           <span
             className="font-bold font-mono tracking-tight"
             style={{
-              fontSize: '42px',
+              fontSize: `${Math.round(size * 0.17)}px`,
               color: clampedValue >= 75 ? '#ba1a1a' : clampedValue >= 50 ? '#b25e00' : '#00666f',
               letterSpacing: '-0.03em',
             }}
           >
             {clampedValue}
           </span>
-          <span className="text-[20px] font-bold text-[#445f73] font-mono ml-0.5">%</span>
+          <span
+            className="font-bold text-[#445f73] font-mono ml-0.5"
+            style={{ fontSize: `${Math.round(size * 0.085)}px` }}
+          >
+            %
+          </span>
         </div>
         <span
-          className="text-[10px] font-bold uppercase tracking-widest text-[#445f73] mt-1"
+          className="text-[9.5px] font-bold uppercase tracking-widest text-[#445f73] mt-0.5"
           style={{ letterSpacing: '0.08em' }}
         >
           Composite Stress Index

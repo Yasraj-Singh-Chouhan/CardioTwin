@@ -27,7 +27,7 @@ export default function AppLayout() {
         {!isPrimaryTwinPage && <TopBar patientId={params.id} />}
         <main
           className={`flex-1 w-full ${
-            isPrimaryTwinPage ? 'p-0' : 'p-6 lg:p-8 max-w-[1560px] mx-auto'
+            isPrimaryTwinPage ? 'p-0' : 'pt-16 px-4 sm:px-6 lg:px-8 pb-8 max-w-[1560px] mx-auto'
           }`}
         >
           <Outlet />

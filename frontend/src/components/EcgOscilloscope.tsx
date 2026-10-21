@@ -34,12 +34,12 @@ export function EcgOscilloscope({
     let sweepX = 0;
     let t = 0;
 
-    // Determine color
+    // Permanent authentic CCU Cath-Monitor Phosphor palette
     const strokeColor = color
       ? color
       : isCrisis
-      ? '#ff2a6d'
-      : '#00f5d4'; // Glowing neon cyan / crimson
+      ? '#ff334b' // High-alert CCU neon crimson
+      : '#00f5d4'; // Standard clinical tonometry glowing neon cyan
 
     const render = () => {
       // Advance wave synthesis
@@ -53,7 +53,7 @@ export function EcgOscilloscope({
       if (normalizedPhase > 0.15 && normalizedPhase < 0.25) {
         // P-wave (atrial depolarization)
         const pPhase = (normalizedPhase - 0.2) / 0.05;
-        yVal -= Math.exp(-pPhase * pPhase * 4) * (h * 0.12);
+        yVal -= Math.exp(-pPhase * pPhase * 4) * (h * 0.13);
       } else if (normalizedPhase >= 0.28 && normalizedPhase <= 0.3) {
         // Q-wave (small dip)
         yVal += h * 0.08;
@@ -79,13 +79,13 @@ export function EcgOscilloscope({
 
       wavePoints[sweepX] = yVal;
 
-      // Clear with dark persistence trail
-      ctx.fillStyle = 'rgba(7, 19, 23, 0.25)';
+      // Permanent deep black CRT persistence trail
+      ctx.fillStyle = 'rgba(6, 15, 20, 0.26)';
       ctx.fillRect(0, 0, width, h);
 
       // Draw faint tactical medical grid lines
       if (showGrid) {
-        ctx.strokeStyle = 'rgba(0, 245, 212, 0.06)';
+        ctx.strokeStyle = 'rgba(0, 245, 212, 0.07)';
         ctx.lineWidth = 1;
         ctx.beginPath();
         for (let x = 0; x < width; x += 24) {
@@ -100,7 +100,7 @@ export function EcgOscilloscope({
       }
 
       // Erase gap right ahead of sweep bar
-      const gapWidth = 12;
+      const gapWidth = 14;
       for (let g = 0; g < gapWidth; g++) {
         const eraseIdx = (sweepX + g) % width;
         wavePoints[eraseIdx] = h / 2;
@@ -164,28 +164,47 @@ export function EcgOscilloscope({
   }, [heartRate, isCrisis, color, height, showGrid]);
 
   return (
-    <div className={`relative overflow-hidden rounded-2xl border border-[#00666f]/20 bg-[#071317] shadow-inner ${className}`}>
+    <div
+      className={`relative overflow-hidden rounded-2xl border border-teal-500/25 bg-[#061014] shadow-md text-white ${className}`}
+      style={{
+        boxShadow: 'inset 0 1px 3px rgba(0,0,0,0.6), 0 4px 14px -3px rgba(0,0,0,0.25)',
+      }}
+    >
       <canvas ref={canvasRef} className="block w-full" style={{ height: `${height}px` }} />
 
       {/* Top Telemetry Overlay */}
       <div className="absolute top-2 left-3 flex items-center gap-2 pointer-events-none">
-        <span className="w-2 h-2 rounded-full animate-ping" style={{ backgroundColor: isCrisis ? '#ff2a6d' : '#00f5d4' }} />
-        <span className="font-mono text-[10px] tracking-wider uppercase font-bold text-teal-400">
+        <span
+          className="w-2 h-2 rounded-full animate-ping"
+          style={{ backgroundColor: isCrisis ? '#ff334b' : '#00f5d4' }}
+        />
+        <span className="font-mono text-[10px] tracking-wider uppercase font-bold text-teal-300 drop-shadow-xs">
           LEAD II • CONTINUOUS TONOMETRY 100Hz
         </span>
       </div>
 
-      <div className="absolute top-2 right-3 font-mono text-[11px] font-bold text-white/90 pointer-events-none">
-        <span className="text-teal-400">{heartRate}</span> <span className="text-xs text-white/50">BPM</span>
+      <div className="absolute top-2 right-3 font-mono text-[11px] font-bold pointer-events-none text-white/95">
+        <span className="text-teal-300">{heartRate}</span>{' '}
+        <span className="text-xs text-teal-100/60 font-medium">BPM</span>
       </div>
 
       {/* Bottom Clinical Calipers Bar */}
-      <div className="absolute bottom-1.5 left-3 right-3 flex items-center justify-between text-[9px] font-mono text-teal-300/80 pointer-events-none border-t border-teal-500/10 pt-1">
-        <span>PR: <strong className="text-white">158 ms</strong></span>
-        <span>QRS: <strong className="text-white">86 ms</strong></span>
-        <span>QTc: <strong className="text-white">414 ms</strong></span>
-        <span>Augmentation Index (AIx): <strong className="text-amber-300">32%</strong></span>
-        <span className="hidden sm:inline">Buckberg SEVR: <strong className="text-emerald-300">142%</strong></span>
+      <div className="absolute bottom-1.5 left-3 right-3 flex items-center justify-between text-[9px] font-mono pointer-events-none border-t border-teal-500/15 pt-1 text-teal-300/80">
+        <span>
+          PR: <strong className="text-white font-semibold">158 ms</strong>
+        </span>
+        <span>
+          QRS: <strong className="text-white font-semibold">86 ms</strong>
+        </span>
+        <span>
+          QTc: <strong className="text-white font-semibold">414 ms</strong>
+        </span>
+        <span>
+          Augmentation Index (AIx): <strong className="text-amber-300 font-semibold">32%</strong>
+        </span>
+        <span className="hidden sm:inline">
+          Buckberg SEVR: <strong className="text-emerald-300 font-semibold">142%</strong>
+        </span>
       </div>
     </div>
   );

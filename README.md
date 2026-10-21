@@ -43,7 +43,7 @@
 | Resource | Link |
 | :--- | :--- |
 | 📹 Demo Video (15–20 min walkthrough) | *Coming soon — link will be updated here* |
-| 📊 Presentation (PDF/PPT) |https://drive.google.com/file/d/197wTdvUOSFoiPHAQmNtm9P_7LUO6pWT4/view?usp=sharing |
+| 📊 Presentation (PDF/PPT) | https://drive.google.com/file/d/197wTdvUOSFoiPHAQmNtm9P_7LUO6pWT4/view?usp=drive_link |
 
 ---
 
@@ -106,7 +106,7 @@
          └───────────────────────┘                     └───────────────────────┘
 ```
 
-> 📐 A detailed architecture diagram : (https://drive.google.com/file/d/1Dac3y6nKASWvDqMTlLq0YUQrA-TeDU2o/view?usp=sharing)
+> 📐 A detailed architecture diagram: [View on Google Drive](https://drive.google.com/file/d/1Dac3y6nKASWvDqMTlLq0YUQrA-TeDU2o/view?usp=drive_link)
 
 ---
 
