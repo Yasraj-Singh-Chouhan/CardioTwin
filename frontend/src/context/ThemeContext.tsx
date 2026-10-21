@@ -10,8 +10,8 @@ interface ThemeContextType {
 }
 
 const ThemeContext = createContext<ThemeContextType>({
-  theme: 'dark',
-  isDark: true,
+  theme: 'light',
+  isDark: false,
   toggleTheme: () => {},
   setTheme: () => {},
 });
@@ -19,8 +19,10 @@ const ThemeContext = createContext<ThemeContextType>({
 export function ThemeProvider({ children }: { children: React.ReactNode }) {
   const [theme, setThemeState] = useState<Theme>(() => {
     const saved = localStorage.getItem('cardiotwin-theme');
-    if (saved === 'light' || saved === 'dark') return saved;
-    return 'dark'; // Default to ultra-luxurious dark clinical obsidian mode
+    // If the user previously had 'dark' saved from old default, default to 'light'
+    if (saved === 'dark') return 'light';
+    if (saved === 'light') return 'light';
+    return 'light'; // Clean, high-readability clinical light theme by default
   });
 
   useEffect(() => {

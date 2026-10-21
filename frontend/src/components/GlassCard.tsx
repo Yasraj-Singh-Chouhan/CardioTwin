@@ -21,11 +21,11 @@ export default function GlassCard({
   return (
     <div
       className={`relative backdrop-blur-xl transition-all duration-300 ${
-        hoverable ? 'hover:-translate-y-1 hover:shadow-2xl cursor-pointer' : ''
+        hoverable ? 'hover:-translate-y-1 hover:shadow-xl cursor-pointer' : ''
       } ${
         isDark
-          ? 'bg-[#0e1626]/75 border border-white/[0.08] text-[#e2f1ef] shadow-[0_16px_48px_-8px_rgba(0,0,0,0.65),inset_0_1px_1px_rgba(255,255,255,0.08)] hover:border-cyan-400/30'
-          : 'bg-white/75 border border-white/85 text-[#111e1d] shadow-[0_12px_40px_-6px_rgba(11,42,60,0.06),inset_0_1px_2px_rgba(255,255,255,0.95)]'
+          ? 'bg-[#0f172a]/85 border border-slate-700/60 text-slate-100 shadow-[0_16px_48px_-8px_rgba(0,0,0,0.5)] hover:border-slate-600'
+          : 'bg-white/92 border border-slate-200/80 text-slate-900 shadow-[0_4px_24px_-2px_rgba(15,23,42,0.05),0_1px_3px_0_rgba(15,23,42,0.03)] hover:border-slate-300'
       } ${className}`}
       style={{
         borderRadius: `${radius}px`,

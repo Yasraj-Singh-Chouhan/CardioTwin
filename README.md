@@ -12,41 +12,6 @@
 
 ---
 
-## 🏆 Submission — Digital Twin Challenge 2026
-
-| Field | Details |
-| :--- | :--- |
-| **Hackathon** | Digital Twin Challenge 2026 |
-| **Project Title** | CardioTwin: Physiologically-Grounded Digital Twin for Early Warning of Hypertensive Crisis in the Indian Population |
-| **Problem Statement** | Hypertensive crisis remains a leading cause of preventable cardiovascular mortality in India, yet no existing clinical tool provides early warning tailored to South Asian phenotypes. Current risk models are built on Western cohorts and fail to account for India-specific risk factors including lower-BMI metabolic syndrome, tobacco chewing, ambient air pollution exposure, and festival-season lifestyle disruption. CardioTwin addresses this gap by building a patient-specific in-silico cardiovascular twin that fuses EHR data, continuous wearable telemetry, and real-time environmental signals to predict crisis-range blood pressure episodes 6 to 12 hours before clinical onset. |
-| **Healthcare Use Case** | Critical Care Monitoring and Early Warning for High-Risk Hypertensive Patients in Indian Urban Hospitals. CardioTwin supports attending physicians in CCU and outpatient cardiology settings by providing continuous physiological surveillance, explainable alert generation, and in-silico counterfactual simulation — enabling proactive intervention before a hypertensive crisis reaches the emergency department. |
-
----
-
-## 👥 Team
-
-**Team Lead: Tejaswi Jain**
-
-| Name | Institution |
-| :--- | :--- |
-| Tejaswi Jain | IIST |
-| Arohi Nigam | IIST |
-| Kashish Nankani | IIPS, DAVV |
-| Yashraj Singh Chouhan | IIST |
-
-**College / Incubator:** Indian Institute of Information Science and Technology (IIST) and IIPS, Devi Ahilya Vishwavidyalaya (DAVV)
-
----
-
-## 🎥 Demo Video & Presentation
-
-| Resource | Link |
-| :--- | :--- |
-| 📹 Demo Video (15–20 min walkthrough) | *Coming soon — link will be updated here* |
-| 📊 Presentation (PDF/PPT) |https://drive.google.com/file/d/197wTdvUOSFoiPHAQmNtm9P_7LUO6pWT4/view?usp=sharing |
-
----
-
 ## 🌟 Key Highlights & Innovations
 
 1. **Dual-Engine Architecture (Slow Twin + Fast Twin)**:
@@ -66,10 +31,6 @@
    - Transparent waterfall plots breaking down exact clinical risk drivers (no black-box AI).
 7. **Hospital-Grade Clinical Workflow**:
    - Patient Cohort Roster, Cath Lab Emergency Triage, Nursing Alarm Desk with One-Click Escalation, and Audit Vault.
-8. **India-Calibrated Risk Scoring**:
-   - Risk adjustments grounded in ICMR-INDIAB, INTERHEART South Asia, CARRS, and Jaipur Heart Watch datasets. WHO Asia-Pacific BMI cutoffs applied throughout. Tobacco chewing modeled as a distinct South Asian risk factor.
-9. **CDSCO Immutable Audit Vault**:
-   - Every alert acknowledgement, cath lab escalation, and AI twin calibration is cryptographically sealed using SHA-256 Merkle chain with ISO 13485:2016 compliance for medico-legal accountability.
 
 ---
 
@@ -106,8 +67,6 @@
          └───────────────────────┘                     └───────────────────────┘
 ```
 
-> 📐 A detailed architecture diagram : (https://drive.google.com/file/d/1Dac3y6nKASWvDqMTlLq0YUQrA-TeDU2o/view?usp=sharing)
-
 ---
 
 ## 🚀 Quickstart Guide
@@ -118,16 +77,20 @@
 
 ### 2. Backend Setup
 ```bash
+# Navigate to backend directory
 cd backend
 
+# Create virtual environment (optional if using global python)
 python -m venv .venv
 # Windows:
 .venv\Scripts\activate
 # Mac/Linux:
 source .venv/bin/activate
 
+# Install dependencies
 pip install -r requirements.txt
 
+# Run backend API server
 python -m uvicorn app.main:app --host 127.0.0.1 --port 8000 --reload
 ```
 * Backend API will run at **http://127.0.0.1:8000**
@@ -135,10 +98,13 @@ python -m uvicorn app.main:app --host 127.0.0.1 --port 8000 --reload
 
 ### 3. Frontend Setup
 ```bash
+# In a new terminal, navigate to frontend directory
 cd frontend
 
+# Install dependencies
 npm install
 
+# Start Vite development server
 npm run dev
 ```
 * Open your browser at **http://localhost:5173**
@@ -165,7 +131,7 @@ pytest
 | `/nursing-desk` | **Nursing Station** | Ward-level audio/visual alarm monitoring, acknowledgement, and cardiologist escalation. |
 | `/cath-lab-triage` | **Cath Lab Triage** | Emergency prioritization queue for acute coronary intervention beds. |
 | `/audit-vault` | **Audit Vault** | Tamper-evident ledger of clinical overrides, calibrations, and alert resolutions. |
-| `/datasheet` | **Model Datasheet** | Standardized ethical model documentation on Indian demographic calibration. |
+| `/datasheet` | **Model Datasheet** | Standardized ethical model documentation (Gebru et al.) on Indian demographic calibration. |
 
 ---
 
@@ -186,27 +152,6 @@ pytest
 
 ---
 
-## 🔬 Data & Validation
-
-CardioTwin uses a semi-synthetic cohort of 1,000 patients across 30 days each. Every data field is documented in the in-app CDSCO Regulatory Datasheet with provenance tagged as Real-fitted, Derived, or Assumed.
-
-Real open datasets used as seeds:
-
-* NFHS-5 (age distribution)
-* ICMR-INDIAB (BMI, physical activity)
-* GATS India Survey (smoking and tobacco)
-* AIIMS Endocrinology Registry (HbA1c)
-* MIMIC-IV and tonometric trials (blood pressure)
-* PhysioNet MMASH and MIT-BIH (HRV baselines)
-
-**Honest caveat**: Models learn effects encoded by the generator. Results demonstrate the pipeline works on a controlled simulation. Real-world clinical validation is the essential next step. This is a decision-support proof of concept. It does not diagnose, and it never recommends starting, stopping, or changing a medication.
-
----
-
 ## 📄 License & Attribution
-
-MIT License
-
-Developed for the **Digital Twin Challenge 2026**.  
-Adheres to the **Datasheets for Health Models** standard for algorithmic accountability.  
-India risk calibration grounded in ICMR-INDIAB, INTERHEART South Asia, CARRS, and Jaipur Heart Watch published literature.
+Developed for the Healthcare AI Hackathon (Bangalore).  
+Adheres to the **Datasheets for Health Models** standard for algorithmic accountability.

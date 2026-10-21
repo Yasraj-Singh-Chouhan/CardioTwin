@@ -685,7 +685,7 @@ export default function PatientPortalPage() {
 
       {/* Doctor Consultation Modal */}
       {activeDoctorModal && (
-        <div className="fixed inset-0 z-50 bg-black/35 backdrop-blur-xs flex items-center justify-center p-4">
+        <div className="fixed inset-0 z-50 bg-slate-900/25 backdrop-blur-xs flex items-center justify-center p-4">
           <div className="bg-white rounded-3xl p-6 max-w-sm w-full shadow-2xl border border-slate-100 animate-in fade-in zoom-in-95">
             <div className="flex items-center justify-between mb-4">
               <div className="flex items-center gap-3">
@@ -747,7 +747,7 @@ export default function PatientPortalPage() {
 
       {/* Medication Details Modal */}
       {showMedModal && (
-        <div className="fixed inset-0 z-50 bg-black/35 backdrop-blur-xs flex items-center justify-center p-4">
+        <div className="fixed inset-0 z-50 bg-slate-900/25 backdrop-blur-xs flex items-center justify-center p-4">
           <div className="bg-white rounded-3xl p-6 max-w-sm w-full shadow-2xl border border-slate-100 animate-in fade-in zoom-in-95">
             <div className="flex items-center justify-between mb-3">
               <h3 className="font-bold text-slate-900 text-[16px]">
@@ -779,7 +779,7 @@ export default function PatientPortalPage() {
 
             <button
               onClick={() => setShowMedModal(null)}
-              className="w-full py-2.5 rounded-xl bg-slate-900 hover:bg-black text-white font-bold text-[12px] transition-colors cursor-pointer"
+              className="w-full py-2.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-white font-bold text-[12px] transition-colors cursor-pointer"
               type="button"
             >
               Close Record

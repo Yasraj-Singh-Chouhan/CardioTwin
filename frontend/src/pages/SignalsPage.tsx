@@ -980,7 +980,7 @@ export default function SignalsPage() {
 
           {/* Raw Telemetry Log Slide-Over Drawer Modal */}
           {showTelemetryDrawer && (
-            <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-md p-4">
+            <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/30 backdrop-blur-sm p-4">
               <div
                 className="w-full max-w-4xl max-h-[85vh] p-6 rounded-3xl flex flex-col gap-4 relative animate-in fade-in zoom-in-95 duration-200 border border-white"
                 style={{

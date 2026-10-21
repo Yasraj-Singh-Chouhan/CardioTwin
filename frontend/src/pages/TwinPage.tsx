@@ -336,80 +336,114 @@ export default function TwinPage() {
                   </span>
                 </div>
 
-                {/* Windkessel Biophysics */}
-                <div className="w-full mt-5 flex flex-col gap-3">
+                {/* 3-Element Windkessel Biophysics */}
+                <div className="w-full mt-4 flex flex-col gap-2.5">
                   <div className="flex items-center justify-between">
-                    <span className="text-[11px] font-bold uppercase tracking-wider text-[#00666f]">
-                      3-Element Windkessel Biophysics
+                    <div className="flex items-center gap-1.5">
+                      <Activity className="w-3.5 h-3.5 text-teal-700" />
+                      <span className="text-[11px] font-bold uppercase tracking-wider text-teal-900 font-mono">
+                        3-Element Windkessel Biophysics
+                      </span>
+                    </div>
+                    <span className="text-[10px] font-mono font-bold px-2 py-0.5 rounded bg-teal-50 text-teal-800 border border-teal-200/80">
+                      ODE BIO-FIT
                     </span>
-                    <span className="text-[10px] font-mono font-semibold text-[#196C57]">ODE BIO-FIT</span>
                   </div>
 
                   <div className="space-y-2 text-[12px]">
-                    <div className="flex items-center justify-between p-2.5 rounded-xl bg-white/70 border border-gray-100">
-                      <div>
-                        <span className="text-[#111e1d] font-semibold block">Peripheral Resistance (R_p)</span>
-                        <span className="text-[10px] text-[#445f73]">Vasoconstrictive tone</span>
+                    {/* Param 1: Peripheral Resistance (R_p) */}
+                    <div className="p-2.5 rounded-xl bg-white/80 border border-slate-200/70 shadow-2xs flex flex-col gap-1">
+                      <div className="flex items-baseline justify-between">
+                        <span className="text-slate-900 font-bold text-[12.5px] tracking-tight">Peripheral Resistance (R_p)</span>
+                        <span className="font-mono font-bold text-[13px] text-slate-900 tabular-nums">
+                          {twin.windkessel_params.r_peripheral} <span className="text-[10px] font-medium text-slate-500">mmHg·s/mL</span>
+                        </span>
                       </div>
-                      <span className="font-mono font-bold text-[#ba1a1a]">
-                        {twin.windkessel_params.r_peripheral} (+{twin.windkessel_params.r_peripheral_shift_percent}%)
-                      </span>
+                      <div className="flex items-center justify-between text-[10.5px]">
+                        <span className="text-slate-500">Vasoconstrictive tone</span>
+                        <span className="font-mono font-bold px-1.5 py-0.5 rounded bg-red-50 text-red-700 border border-red-200/60 leading-none">
+                          +{twin.windkessel_params.r_peripheral_shift_percent}% Elevated Tone
+                        </span>
+                      </div>
                     </div>
 
-                    <div className="flex items-center justify-between p-2.5 rounded-xl bg-white/70 border border-gray-100">
-                      <div>
-                        <span className="text-[#111e1d] font-semibold block">Arterial Compliance (C_art)</span>
-                        <span className="text-[10px] text-[#445f73]">Aortic elastic reservoir</span>
+                    {/* Param 2: Arterial Compliance (C_art) */}
+                    <div className="p-2.5 rounded-xl bg-white/80 border border-slate-200/70 shadow-2xs flex flex-col gap-1">
+                      <div className="flex items-baseline justify-between">
+                        <span className="text-slate-900 font-bold text-[12.5px] tracking-tight">Arterial Compliance (C_art)</span>
+                        <span className="font-mono font-bold text-[13px] text-slate-900 tabular-nums">
+                          {twin.windkessel_params.c_arterial} <span className="text-[10px] font-medium text-slate-500">mL/mmHg</span>
+                        </span>
                       </div>
-                      <span className="font-mono font-bold text-[#111e1d]">
-                        {twin.windkessel_params.c_arterial} mL/mmHg
-                      </span>
+                      <div className="flex items-center justify-between text-[10.5px]">
+                        <span className="text-slate-500">Aortic elastic reservoir</span>
+                        <span className="font-mono font-bold px-1.5 py-0.5 rounded bg-blue-50 text-blue-700 border border-blue-200/60 leading-none">
+                          Stiffened Reserve
+                        </span>
+                      </div>
                     </div>
 
-                    <div className="flex items-center justify-between p-2.5 rounded-xl bg-white/70 border border-gray-100">
-                      <div>
-                        <span className="text-[#111e1d] font-semibold block">Cardiac Output (Q_co)</span>
-                        <span className="text-[10px] text-[#445f73]">Stroke volume x HR</span>
+                    {/* Param 3: Cardiac Output (Q_co) */}
+                    <div className="p-2.5 rounded-xl bg-white/80 border border-slate-200/70 shadow-2xs flex flex-col gap-1">
+                      <div className="flex items-baseline justify-between">
+                        <span className="text-slate-900 font-bold text-[12.5px] tracking-tight">Cardiac Output (Q_co)</span>
+                        <span className="font-mono font-bold text-[13px] text-slate-900 tabular-nums">
+                          {twin.windkessel_params.cardiac_output_l_min} <span className="text-[10px] font-medium text-slate-500">L/min</span>
+                        </span>
                       </div>
-                      <span className="font-mono font-bold text-[#111e1d]">
-                        {twin.windkessel_params.cardiac_output_l_min} L/min
-                      </span>
+                      <div className="flex items-center justify-between text-[10.5px]">
+                        <span className="text-slate-500">Stroke volume × Heart Rate</span>
+                        <span className="font-mono font-bold px-1.5 py-0.5 rounded bg-emerald-50 text-emerald-700 border border-emerald-200/60 leading-none">
+                          Active Perfusion
+                        </span>
+                      </div>
                     </div>
 
-                    <div className="flex items-center justify-between p-2.5 rounded-xl bg-white/70 border border-gray-100">
-                      <div>
-                        <span className="text-[#111e1d] font-semibold block">In Silico Tolerance</span>
-                        <span className="text-[10px] text-[#445f73]">Calibration residual error</span>
+                    {/* Param 4: In Silico Tolerance */}
+                    <div className="p-2.5 rounded-xl bg-white/80 border border-slate-200/70 shadow-2xs flex flex-col gap-1">
+                      <div className="flex items-baseline justify-between">
+                        <span className="text-slate-900 font-bold text-[12.5px] tracking-tight">In Silico Tolerance</span>
+                        <span className="font-mono font-bold text-[13px] text-emerald-700 tabular-nums">
+                          {twin.windkessel_params.biofit_tolerance_percent}% <span className="text-[10px] font-medium text-slate-500">Nominal</span>
+                        </span>
                       </div>
-                      <span className="font-mono font-bold text-[#196C57]">
-                        {twin.windkessel_params.biofit_tolerance_percent}% Nominal
-                      </span>
+                      <div className="flex items-center justify-between text-[10.5px]">
+                        <span className="text-slate-500">Calibration residual error</span>
+                        <span className="font-mono font-bold px-1.5 py-0.5 rounded bg-emerald-50 text-emerald-700 border border-emerald-200/60 leading-none">
+                          ΔTDI 0.14 Validated
+                        </span>
+                      </div>
                     </div>
                   </div>
                 </div>
 
                 {/* Multiscale Scales */}
-                <div className="w-full mt-5 pt-4 border-t border-[#bcc9cb]/30 flex flex-col gap-3">
-                  <div className="text-[12px]">
-                    <div className="flex justify-between font-semibold mb-1">
-                      <span className="text-[#ba1a1a]">Fast-Twin (Acute Crisis Stress)</span>
-                      <span className="font-bold text-[#ba1a1a] font-mono">{twin.scales.acute_twin_score}%</span>
-                    </div>
-                    <div className="w-full h-2 rounded-full bg-red-100 overflow-hidden mb-1">
-                      <div className="h-full bg-[#ba1a1a] rounded-full" style={{ width: `${twin.scales.acute_twin_score}%` }} />
-                    </div>
-                    <p className="text-[11px] text-[#445f73] leading-tight">{twin.scales.acute_twin_label}</p>
+                <div className="w-full mt-4 pt-3.5 border-t border-slate-200/70 flex flex-col gap-3">
+                  <div className="flex items-center justify-between text-[10.5px] font-bold uppercase tracking-wider text-slate-400 font-mono">
+                    <span>Multiscale Time-Lapse</span>
+                    <span>Stress Index</span>
                   </div>
 
-                  <div className="text-[12px]">
-                    <div className="flex justify-between font-semibold mb-1">
-                      <span className="text-[#1d5bf0]">Slow-Twin (Chronic Atherosclerotic Stiffening)</span>
-                      <span className="font-bold text-[#1d5bf0] font-mono">{twin.scales.chronic_twin_score}%</span>
+                  <div className="text-[12px] flex flex-col gap-1">
+                    <div className="flex justify-between items-baseline font-semibold">
+                      <span className="text-red-700 font-bold text-[12px]">Fast-Twin (Acute Crisis Stress)</span>
+                      <span className="font-bold text-red-700 font-mono text-[13px] tabular-nums">{twin.scales.acute_twin_score}%</span>
                     </div>
-                    <div className="w-full h-2 rounded-full bg-[#e5efff] overflow-hidden mb-1">
-                      <div className="h-full bg-[#1d5bf0] rounded-full" style={{ width: `${twin.scales.chronic_twin_score}%` }} />
+                    <div className="w-full h-1.5 rounded-full bg-red-100 overflow-hidden">
+                      <div className="h-full bg-red-600 rounded-full transition-all duration-500" style={{ width: `${twin.scales.acute_twin_score}%` }} />
                     </div>
-                    <p className="text-[11px] text-[#445f73] leading-tight">{twin.scales.chronic_twin_label}</p>
+                    <p className="text-[10.5px] text-slate-500 leading-snug">{twin.scales.acute_twin_label}</p>
+                  </div>
+
+                  <div className="text-[12px] flex flex-col gap-1">
+                    <div className="flex justify-between items-baseline font-semibold">
+                      <span className="text-indigo-700 font-bold text-[12px]">Slow-Twin (Chronic Vascular Stiffening)</span>
+                      <span className="font-bold text-indigo-700 font-mono text-[13px] tabular-nums">{twin.scales.chronic_twin_score}%</span>
+                    </div>
+                    <div className="w-full h-1.5 rounded-full bg-indigo-100 overflow-hidden">
+                      <div className="h-full bg-indigo-600 rounded-full transition-all duration-500" style={{ width: `${twin.scales.chronic_twin_score}%` }} />
+                    </div>
+                    <p className="text-[10.5px] text-slate-500 leading-snug">{twin.scales.chronic_twin_label}</p>
                   </div>
                 </div>
               </GlassCard>
@@ -750,7 +784,7 @@ export default function TwinPage() {
 
           {/* Escalation Modal Dialog */}
           {showEscalateModal && (
-            <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-md p-4">
+            <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/30 backdrop-blur-sm p-4">
               <div
                 className="w-full max-w-lg p-6 rounded-3xl flex flex-col gap-4 relative animate-in fade-in zoom-in-95 duration-200 border border-white"
                 style={{

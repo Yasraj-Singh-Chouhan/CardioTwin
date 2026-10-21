@@ -7,11 +7,14 @@ import {
   VolumeX,
   Clock,
   Loader2,
+  Sun,
+  Moon,
 } from 'lucide-react';
 import { quickSearchPatients, getAlertsFeed, acknowledgeAlert } from '../api/client';
 import type { QuickSearchResult, ClinicalAlert } from '../api/types';
 import RiskBadge from './RiskBadge';
 import { useAudioTelemetry } from '../hooks/useAudioTelemetry';
+import { useTheme } from '../context/ThemeContext';
 
 interface TopBarProps {
   patientId?: string;
@@ -21,6 +24,7 @@ export default function TopBar({ patientId }: TopBarProps = {}) {
   const navigate = useNavigate();
   const location = useLocation();
   const { isMuted, toggleMute, triggerCardiacBeep } = useAudioTelemetry();
+  const { isDark, toggleTheme } = useTheme();
 
   // Search state
   const [searchQuery, setSearchQuery] = useState('');
@@ -307,6 +311,20 @@ export default function TopBar({ patientId }: TopBarProps = {}) {
           title={isMuted ? 'Telemetry Audio: Muted' : 'Telemetry Audio: Active'}
         >
           {isMuted ? <VolumeX className="w-3.5 h-3.5" /> : <Volume2 className="w-3.5 h-3.5" />}
+        </button>
+
+        {/* Theme Toggle (Light / Dark) */}
+        <button
+          type="button"
+          onClick={toggleTheme}
+          className={`w-8 h-8 rounded-full flex items-center justify-center transition-all border ${
+            isDark
+              ? 'bg-amber-400/10 text-amber-300 border-amber-400/20 hover:bg-amber-400/20'
+              : 'bg-slate-50 hover:bg-slate-100 text-slate-600 border-slate-200/80 shadow-2xs hover:scale-105'
+          }`}
+          title={isDark ? 'Current: Dark Mode. Click for Light Mode' : 'Current: Light Mode. Click for Dark Mode'}
+        >
+          {isDark ? <Sun className="w-3.5 h-3.5" /> : <Moon className="w-3.5 h-3.5" />}
         </button>
 
         {/* Doctor Persona Badge */}

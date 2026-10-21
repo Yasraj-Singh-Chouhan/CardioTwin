@@ -17,8 +17,11 @@ import {
   X,
   ArrowRight,
   Activity,
+  Sun,
+  Moon,
 } from 'lucide-react';
 import { useAudioTelemetry } from '../hooks/useAudioTelemetry';
+import { useTheme } from '../context/ThemeContext';
 import { quickSearchPatients, getAlertsFeed } from '../api/client';
 import type { QuickSearchResult, ClinicalAlert } from '../api/types';
 import RiskBadge from './RiskBadge';
@@ -33,6 +36,7 @@ export default function Sidebar({ activePatientId }: SidebarProps) {
   const [searchParams] = useSearchParams();
   const patientId = activePatientId || 'CT-3092';
   const { isMuted, toggleMute } = useAudioTelemetry();
+  const { isDark, toggleTheme } = useTheme();
 
   // Role Detection: Patient Portal vs Doctor CCU Command
   const isPatientMode =
@@ -280,6 +284,23 @@ export default function Sidebar({ activePatientId }: SidebarProps) {
             </span>
           </button>
 
+          {/* Theme Toggle (Light / Dark) */}
+          <button
+            type="button"
+            onClick={toggleTheme}
+            className={`w-10 h-10 rounded-xl flex items-center justify-center transition-all group relative ${
+              isDark
+                ? 'text-amber-400 hover:bg-slate-800'
+                : 'text-slate-500 hover:text-slate-800 hover:bg-slate-100 shadow-2xs'
+            }`}
+            title={isDark ? 'Switch to Light Mode' : 'Switch to Dark Mode'}
+          >
+            {isDark ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
+            <span className="absolute left-14 bg-slate-900 text-white text-[11px] font-medium px-2 py-1 rounded-md whitespace-nowrap opacity-0 pointer-events-none group-hover:opacity-100 transition-opacity z-50 shadow-md">
+              {isDark ? 'Switch to Light Mode' : 'Switch to Dark Mode'}
+            </span>
+          </button>
+
           {/* Avatar (Click to switch portal or view profile) */}
           <div
             onClick={() => {
@@ -313,7 +334,7 @@ export default function Sidebar({ activePatientId }: SidebarProps) {
       {/* QUICK PATIENT SEARCH MODAL (CMD+K / SEARCH BUTTON)                         */}
       {/* ========================================================================= */}
       {showSearchModal && (
-        <div className="fixed inset-0 z-50 bg-black/35 backdrop-blur-xs flex items-start justify-center pt-24 p-4">
+        <div className="fixed inset-0 z-50 bg-slate-900/25 backdrop-blur-xs flex items-start justify-center pt-24 p-4">
           <div className="bg-white rounded-3xl p-5 max-w-lg w-full shadow-2xl border border-slate-100 animate-in fade-in zoom-in-95">
             <div className="flex items-center justify-between pb-3 border-b border-slate-100 mb-3">
               <div className="flex items-center gap-2 text-slate-800 font-bold text-[14px]">

@@ -19,6 +19,7 @@ import {
   ChevronLeft,
   ChevronRight,
   Users,
+  Clock,
 } from 'lucide-react';
 import { getPatientDetail, getTwinState, getPredictions, getPatientAlerts, acknowledgeAlert } from '../api/client';
 import { useReplay } from '../hooks/useReplay';
@@ -57,6 +58,8 @@ export default function DoctorTwinPage() {
   const [showPatientDropdown, setShowPatientDropdown] = useState(false);
   const [selectedProtocol, setSelectedProtocol] = useState('Stat CCU Triage & Continuous Tonometry');
   const [actionNotice, setActionNotice] = useState<{ type: 'ack' | 'esc'; title: string; detail: string } | null>(null);
+  const [centerTab, setCenterTab] = useState<'split' | 'chamber' | 'trajectory'>('split');
+  const [rightTab, setRightTab] = useState<'alerts' | 'meds'>('alerts');
 
   // Live WebSocket Replay Hook
   const {
@@ -118,7 +121,7 @@ export default function DoctorTwinPage() {
   };
 
   return (
-    <div className="flex flex-col w-full max-w-[1560px] mx-auto gap-4 mt-14 pb-10 px-4">
+    <div className="flex flex-col w-full gap-3 pb-8">
       {isLoading && <GlassSkeleton lines={7} />}
       {isError && (
         <GlassError
@@ -131,216 +134,214 @@ export default function DoctorTwinPage() {
         />
       )}
 
-      {/* Doctor Header Banner with Patient Switcher */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 py-2 border-b border-slate-200/80">
-        <div className="flex items-center gap-3 flex-wrap">
-          <span className="px-3 py-1 rounded-full bg-indigo-50 text-indigo-700 font-mono text-[11px] font-bold border border-indigo-200 flex items-center gap-1.5">
-            <Stethoscope className="w-3.5 h-3.5 text-indigo-600" />
-            <span>Doctor CCU Command Center</span>
-          </span>
-          <span className="text-[12px] text-slate-500 font-medium">
-            Attending: <strong>Dr. A. Sharma (CCU Lead)</strong>
-          </span>
-        </div>
-
-        {/* Prominent Patient Switcher Dropdown */}
-        <div className="flex items-center gap-2 relative">
-          <div className="flex items-center gap-1 bg-white rounded-xl border border-slate-200 shadow-2xs p-1">
-            <button
-              onClick={handlePrevPatient}
-              className="p-1 rounded-lg hover:bg-slate-100 text-slate-500 transition-colors"
-              title="Previous Patient"
-              type="button"
-            >
-              <ChevronLeft className="w-4 h-4" />
-            </button>
-
-            <button
-              onClick={() => setShowPatientDropdown(prev => !prev)}
-              className="flex items-center gap-2 px-2.5 py-1 text-[12px] font-bold text-slate-800 hover:text-indigo-600 transition-colors"
-              type="button"
-            >
-              <Users className="w-3.5 h-3.5 text-indigo-600" />
-              <span>Select Patient: <span className="font-mono text-indigo-600">{patientId}</span> ({patient?.name || 'Loading...'})</span>
-              <ChevronDown className="w-3.5 h-3.5 text-slate-400" />
-            </button>
-
-            <button
-              onClick={handleNextPatient}
-              className="p-1 rounded-lg hover:bg-slate-100 text-slate-500 transition-colors"
-              title="Next Patient"
-              type="button"
-            >
-              <ChevronRight className="w-4 h-4" />
-            </button>
-          </div>
-
-          <Link
-            to="/doctor/roster"
-            className="px-3 py-1.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold text-[11px] transition-all flex items-center gap-1"
-          >
-            <span>Cohort Roster (1,000 Pts) &rarr;</span>
-          </Link>
-
-          {/* Switcher Dropdown Menu */}
-          {showPatientDropdown && (
-            <div className="absolute right-0 top-11 w-80 bg-white rounded-2xl p-2.5 shadow-2xl border border-slate-200 z-50 animate-in fade-in">
-              <div className="text-[11px] font-bold uppercase tracking-wider text-slate-400 px-2 py-1 font-mono">
-                Featured CCU Patients across Tiers:
-              </div>
-              <div className="flex flex-col gap-1 max-h-64 overflow-y-auto mt-1">
-                {FEATURED_CCU_PATIENTS.map(p => (
-                  <div
-                    key={p.id}
-                    onClick={() => {
-                      setShowPatientDropdown(false);
-                      navigate(`/doctor/patients/${p.id}`);
-                    }}
-                    className={`flex items-center justify-between p-2 rounded-xl cursor-pointer transition-colors ${
-                      p.id === patientId ? 'bg-indigo-50 border border-indigo-200' : 'hover:bg-slate-50'
-                    }`}
-                  >
-                    <div>
-                      <div className="flex items-center gap-1.5">
-                        <span className="font-bold text-[12px] text-slate-900">{p.name}</span>
-                        <span className="font-mono text-[10px] text-indigo-600 font-bold">{p.id}</span>
-                      </div>
-                      <span className="text-[10px] text-slate-500">BP: {p.sbp}/{p.dbp} mmHg</span>
-                    </div>
-                    <span className={`text-[10px] font-mono font-bold px-1.5 py-0.5 rounded ${
-                      p.tier === 'CRITICAL' ? 'bg-red-100 text-red-700' :
-                      p.tier === 'HIGH' ? 'bg-orange-100 text-orange-700' :
-                      p.tier === 'ELEVATED' ? 'bg-yellow-100 text-yellow-700' :
-                      p.tier === 'MODERATE' ? 'bg-blue-100 text-blue-700' : 'bg-emerald-100 text-emerald-700'
-                    }`}>
-                      {p.tier}
-                    </span>
-                  </div>
-                ))}
-              </div>
-            </div>
-          )}
-        </div>
-      </div>
-
       {patient && twin && predictions && (
         <>
-          {/* Top Patient Master Bar */}
-          <GlassCard className="w-full flex flex-wrap items-center justify-between gap-4 px-6 py-4 border border-white/80">
-            <div className="flex items-center gap-4">
-              <div
-                className={`relative w-13 h-13 rounded-2xl flex items-center justify-center font-bold text-[19px] shrink-0 font-mono shadow-xs ${
-                  patient.risk_tier === 'CRITICAL'
-                    ? 'bg-red-50 text-[#ba1a1a] border-2 border-[#ba1a1a]/30'
-                    : 'bg-[#e5efff] text-[#1d5bf0] border-2 border-[#1d5bf0]/20'
-                }`}
-                style={{ fontFamily: 'Plus Jakarta Sans' }}
-              >
-                {patient.initials}
-                <span
-                  className={`absolute -bottom-1 -right-1 w-3.5 h-3.5 rounded-full border-2 border-white ${
-                    patient.risk_tier === 'CRITICAL' ? 'bg-[#ba1a1a] animate-pulse' : 'bg-[#2FBF9B]'
+          {/* Unified Doctor CCU Master Command Header */}
+          <GlassCard className="w-full p-4 border border-white/80 shadow-xs rounded-2xl flex flex-col gap-2.5">
+            {/* Top Row: Patient Avatar, Identification & Segmented Switcher */}
+            <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-3">
+              {/* Left: Patient Avatar & Primary Identity */}
+              <div className="flex items-center gap-3">
+                <div
+                  className={`relative w-11 h-11 rounded-xl flex items-center justify-center font-bold text-[16px] shrink-0 font-mono shadow-2xs ${
+                    patient.risk_tier === 'CRITICAL'
+                      ? 'bg-red-50 text-[#ba1a1a] border border-[#ba1a1a]/30'
+                      : 'bg-indigo-50 text-indigo-700 border border-indigo-200/70'
                   }`}
-                />
+                  style={{ fontFamily: 'Plus Jakarta Sans' }}
+                >
+                  {patient.initials}
+                  <span
+                    className={`absolute -bottom-0.5 -right-0.5 w-3 h-3 rounded-full border-2 border-white ${
+                      patient.risk_tier === 'CRITICAL' ? 'bg-[#ba1a1a] animate-pulse' : 'bg-[#2FBF9B]'
+                    }`}
+                  />
+                </div>
+
+                <div className="flex flex-col">
+                  <div className="flex items-center gap-2 flex-wrap">
+                    <h1
+                      className="text-[19px] font-bold text-slate-900 leading-tight"
+                      style={{ fontFamily: 'Plus Jakarta Sans' }}
+                    >
+                      {patient.name}
+                    </h1>
+                    <span className="text-[11px] font-mono font-bold px-2 py-0.5 rounded-md bg-indigo-50 text-indigo-700 border border-indigo-200/80">
+                      {patient.patient_id}
+                    </span>
+                    <RiskBadge tier={patient.risk_tier} />
+                    <span className="hidden sm:inline-flex items-center gap-1 text-[11px] font-medium text-slate-500 bg-slate-100 px-2 py-0.5 rounded-md border border-slate-200/60">
+                      <Stethoscope className="w-3 h-3 text-indigo-600" />
+                      Attending: Dr. A. Sharma (CCU Lead)
+                    </span>
+                  </div>
+                </div>
               </div>
 
-              {/* Patient Meta */}
-              <div className="flex flex-col">
-                <div className="flex items-center gap-3">
-                  <h1 className="text-[22px] font-bold text-[#111e1d] leading-none" style={{ fontFamily: 'Plus Jakarta Sans' }}>
-                    {patient.name}
-                  </h1>
-                  <span className="text-[12px] font-mono font-bold px-2.5 py-0.5 rounded-full bg-[#e5efff] text-[#1d5bf0]">
-                    {patient.patient_id}
-                  </span>
-                  <RiskBadge tier={patient.risk_tier} />
+              {/* Right: Patient Switcher & Action Navigation Pills */}
+              <div className="flex items-center gap-2 flex-wrap justify-between lg:justify-end">
+                {/* Segmented Patient Switcher */}
+                <div className="flex items-center gap-0.5 bg-white rounded-xl border border-slate-200 shadow-2xs p-0.5">
+                  <button
+                    onClick={handlePrevPatient}
+                    className="p-1 rounded-lg hover:bg-slate-100 text-slate-500 transition-colors"
+                    title="Previous Patient"
+                    type="button"
+                  >
+                    <ChevronLeft className="w-4 h-4" />
+                  </button>
+
+                  <button
+                    onClick={() => setShowPatientDropdown(prev => !prev)}
+                    className="flex items-center gap-1.5 px-2 py-1 text-[11.5px] font-bold text-slate-800 hover:text-indigo-600 transition-colors"
+                    type="button"
+                  >
+                    <Users className="w-3.5 h-3.5 text-indigo-600" />
+                    <span>Select: <span className="font-mono text-indigo-600">{patientId}</span> ({patient?.name?.split(' ')[0] || ''})</span>
+                    <ChevronDown className="w-3 h-3 text-slate-400" />
+                  </button>
+
+                  <button
+                    onClick={handleNextPatient}
+                    className="p-1 rounded-lg hover:bg-slate-100 text-slate-500 transition-colors"
+                    title="Next Patient"
+                    type="button"
+                  >
+                    <ChevronRight className="w-4 h-4" />
+                  </button>
                 </div>
-                <div className="flex items-center gap-2.5 text-[12px] text-[#445f73] mt-1.5 flex-wrap">
-                  <span className="font-medium text-[#111e1d]">{patient.age}y {patient.sex}</span>
-                  <span>&bull;</span>
-                  <span><strong>{patient.city}</strong></span>
-                  <span>&bull;</span>
-                  <span className="text-[#111e1d] font-semibold">{patient.primary_condition}</span>
-                  <span>&bull;</span>
-                  <span>BMI <strong>{patient.bmi}</strong></span>
-                  <span>&bull;</span>
-                  <span className="text-[11px] font-semibold text-[#1d5bf0] bg-blue-50 px-2 py-0.5 rounded-full border border-blue-100">
-                    South Asian Phenotype Calibrated
-                  </span>
+
+                <Link
+                  to="/doctor/roster"
+                  className="px-2.5 py-1.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold text-[11px] transition-all flex items-center gap-1 border border-slate-200/60"
+                >
+                  <span>Cohort Roster (1,000 Pts) &rarr;</span>
+                </Link>
+
+                <div className="h-4 w-px bg-slate-200 mx-0.5 hidden xl:block" />
+
+                {/* Sub-tools Links */}
+                <div className="flex items-center gap-1.5">
+                  <Link
+                    to={`/doctor/patients/${patient.patient_id}/explanation`}
+                    className="px-2.5 py-1.5 rounded-xl bg-white hover:bg-indigo-50 text-indigo-700 text-[11px] font-semibold transition-all border border-slate-200 hover:border-indigo-300 shadow-2xs flex items-center gap-1"
+                  >
+                    <BrainCircuit className="w-3.5 h-3.5 text-indigo-600" />
+                    <span>SHAP Causality</span>
+                  </Link>
+                  <Link
+                    to={`/doctor/patients/${patient.patient_id}/scenarios`}
+                    className="px-2.5 py-1.5 rounded-xl bg-white hover:bg-indigo-50 text-indigo-700 text-[11px] font-semibold transition-all border border-slate-200 hover:border-indigo-300 shadow-2xs flex items-center gap-1"
+                  >
+                    <GitFork className="w-3.5 h-3.5 text-indigo-600" />
+                    <span>What-If</span>
+                  </Link>
+                  <Link
+                    to={`/doctor/patients/${patient.patient_id}/signals`}
+                    className="px-2.5 py-1.5 rounded-xl bg-white hover:bg-indigo-50 text-indigo-700 text-[11px] font-semibold transition-all border border-slate-200 hover:border-indigo-300 shadow-2xs flex items-center gap-1"
+                  >
+                    <Activity className="w-3.5 h-3.5 text-indigo-600" />
+                    <span>Signals</span>
+                  </Link>
                 </div>
               </div>
             </div>
 
-            {/* Quick Action Navigation Pills */}
-            <div className="flex items-center gap-2">
-              <Link
-                to={`/doctor/patients/${patient.patient_id}/explanation`}
-                className="px-3.5 py-2 rounded-xl bg-white/80 hover:bg-white text-indigo-600 text-[12px] font-semibold transition-all shadow-2xs border border-white hover:border-indigo-200 flex items-center gap-1.5"
-              >
-                <BrainCircuit className="w-4 h-4 text-indigo-600" />
-                <span>SHAP Causality</span>
-              </Link>
-              <Link
-                to={`/doctor/patients/${patient.patient_id}/scenarios`}
-                className="px-3.5 py-2 rounded-xl bg-white/80 hover:bg-white text-indigo-600 text-[12px] font-semibold transition-all shadow-2xs border border-white hover:border-indigo-200 flex items-center gap-1.5"
-              >
-                <GitFork className="w-4 h-4 text-indigo-600" />
-                <span>What-If Testing</span>
-              </Link>
-              <Link
-                to={`/doctor/patients/${patient.patient_id}/signals`}
-                className="px-3.5 py-2 rounded-xl bg-white/80 hover:bg-white text-indigo-600 text-[12px] font-semibold transition-all shadow-2xs border border-white hover:border-indigo-200 flex items-center gap-1.5"
-              >
-                <Activity className="w-4 h-4 text-indigo-600" />
-                <span>Signals &amp; Recalibration</span>
-              </Link>
+            {/* Switcher Dropdown Menu */}
+            {showPatientDropdown && (
+              <div className="absolute right-6 top-24 w-80 bg-white rounded-2xl p-2.5 shadow-2xl border border-slate-200 z-50 animate-in fade-in">
+                <div className="text-[11px] font-bold uppercase tracking-wider text-slate-400 px-2 py-1 font-mono">
+                  Featured CCU Patients across Tiers:
+                </div>
+                <div className="flex flex-col gap-1 max-h-64 overflow-y-auto mt-1">
+                  {FEATURED_CCU_PATIENTS.map(p => (
+                    <div
+                      key={p.id}
+                      onClick={() => {
+                        setShowPatientDropdown(false);
+                        navigate(`/doctor/patients/${p.id}`);
+                      }}
+                      className={`flex items-center justify-between p-2 rounded-xl cursor-pointer transition-colors ${
+                        p.id === patientId ? 'bg-indigo-50 border border-indigo-200' : 'hover:bg-slate-50'
+                      }`}
+                    >
+                      <div>
+                        <div className="flex items-center gap-1.5">
+                          <span className="font-bold text-[12px] text-slate-900">{p.name}</span>
+                          <span className="font-mono text-[10px] text-indigo-600 font-bold">{p.id}</span>
+                        </div>
+                        <span className="text-[10px] text-slate-500">BP: {p.sbp}/{p.dbp} mmHg</span>
+                      </div>
+                      <span className={`text-[10px] font-mono font-bold px-1.5 py-0.5 rounded ${
+                        p.tier === 'CRITICAL' ? 'bg-red-100 text-red-700' :
+                        p.tier === 'HIGH' ? 'bg-orange-100 text-orange-700' :
+                        p.tier === 'ELEVATED' ? 'bg-yellow-100 text-yellow-700' :
+                        p.tier === 'MODERATE' ? 'bg-blue-100 text-blue-700' : 'bg-emerald-100 text-emerald-700'
+                      }`}>
+                        {p.tier}
+                      </span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* Bottom Row: Demographic Meta & Rapid Tools */}
+            <div className="pt-2.5 border-t border-slate-200/70 flex flex-col md:flex-row md:items-center justify-between gap-2.5">
+              {/* Demographics */}
+              <div className="flex items-center gap-2 text-[11.5px] text-slate-600 flex-wrap">
+                <span className="font-semibold text-slate-800">{patient.age}y {patient.sex}</span>
+                <span className="w-1 h-1 rounded-full bg-slate-300" />
+                <span className="font-medium text-slate-800">{patient.city}</span>
+                <span className="w-1 h-1 rounded-full bg-slate-300" />
+                <span className="font-semibold text-slate-900">{patient.primary_condition}</span>
+                <span className="w-1 h-1 rounded-full bg-slate-300" />
+                <span>BMI <strong className="text-slate-800 font-mono">{patient.bmi}</strong></span>
+                <span className="w-1 h-1 rounded-full bg-slate-300" />
+                <span className="text-[10px] font-bold text-indigo-700 bg-indigo-50 px-2 py-0.5 rounded-full border border-indigo-200/80 font-mono">
+                  South Asian Phenotype Calibrated
+                </span>
+              </div>
+
+              {/* Rapid Action Buttons */}
+              <div className="flex items-center gap-1.5 flex-wrap">
+                <button
+                  onClick={() => setShowSbarModal(true)}
+                  className="px-2.5 py-1 rounded-lg bg-white hover:bg-slate-50 text-slate-800 text-[11px] font-semibold border border-indigo-200 hover:border-indigo-400 shadow-2xs transition-all flex items-center gap-1 active:scale-95 cursor-pointer"
+                  type="button"
+                  title="Generate structured SBAR clinical report for shift handover"
+                >
+                  <FileText className="w-3 h-3 text-indigo-600" />
+                  <span>SBAR Handover</span>
+                </button>
+
+                <button
+                  onClick={() => setShowTitrationModal(true)}
+                  className="px-2.5 py-1 rounded-lg bg-white hover:bg-slate-50 text-slate-800 text-[11px] font-semibold border border-purple-200 hover:border-purple-400 shadow-2xs transition-all flex items-center gap-1 active:scale-95 cursor-pointer"
+                  type="button"
+                  title="CCU IV vasodilator dosing & safe MAP target assistant"
+                >
+                  <Calculator className="w-3 h-3 text-purple-700" />
+                  <span>Titration Assistant</span>
+                </button>
+
+                <button
+                  onClick={() => setShowConsultantModal(true)}
+                  className="px-2.5 py-1 rounded-lg bg-emerald-50 hover:bg-emerald-100 text-emerald-900 text-[11px] font-semibold border border-emerald-300 shadow-2xs transition-all flex items-center gap-1 active:scale-95 cursor-pointer"
+                  type="button"
+                  title="1-Click pre-composed WhatsApp telemetry dispatch to Senior Consultant"
+                >
+                  <MessageSquare className="w-3 h-3 text-emerald-600" />
+                  <span>WhatsApp Alert</span>
+                </button>
+
+                <div className="text-[10.5px] text-slate-500 font-medium hidden 2xl:flex items-center gap-1 bg-white/70 px-2 py-0.5 rounded-md border border-slate-200/60">
+                  <ShieldCheck className="w-3 h-3 text-indigo-600" />
+                  <span>Guideline: &Delta;MAP &le; 25%/hr</span>
+                </div>
+              </div>
             </div>
           </GlassCard>
-
-          {/* Attending Physician Clinical Rapid Tools Toolbar */}
-          <div className="w-full flex flex-wrap items-center justify-between gap-3 px-1 py-1">
-            <div className="flex flex-wrap items-center gap-2">
-              <span className="text-[11px] font-bold uppercase tracking-wider text-indigo-700 font-mono flex items-center gap-1.5 mr-1">
-                <Stethoscope className="w-3.5 h-3.5 text-indigo-600" />
-                Physician Rapid Tools:
-              </span>
-
-              <button
-                onClick={() => setShowSbarModal(true)}
-                className="px-3.5 py-1.5 rounded-xl bg-white/90 hover:bg-white text-[#111e1d] text-[12px] font-semibold border border-indigo-200 hover:border-indigo-400 shadow-2xs transition-all flex items-center gap-1.5 active:scale-95"
-                type="button"
-                title="Generate structured SBAR clinical report for shift handover"
-              >
-                <FileText className="w-3.5 h-3.5 text-indigo-600" />
-                <span>SBAR Shift Handover Note</span>
-              </button>
-
-              <button
-                onClick={() => setShowTitrationModal(true)}
-                className="px-3.5 py-1.5 rounded-xl bg-white/90 hover:bg-white text-[#111e1d] text-[12px] font-semibold border border-purple-200 hover:border-purple-400 shadow-2xs transition-all flex items-center gap-1.5 active:scale-95"
-                type="button"
-                title="CCU IV vasodilator dosing & safe MAP target assistant"
-              >
-                <Calculator className="w-3.5 h-3.5 text-purple-700" />
-                <span>Vasodilator Titration Assistant</span>
-              </button>
-
-              <button
-                onClick={() => setShowConsultantModal(true)}
-                className="px-3.5 py-1.5 rounded-xl bg-emerald-50 hover:bg-emerald-100 text-emerald-900 text-[12px] font-semibold border border-emerald-300 shadow-2xs transition-all flex items-center gap-1.5 active:scale-95"
-                type="button"
-                title="1-Click pre-composed WhatsApp telemetry dispatch to Senior Consultant"
-              >
-                <MessageSquare className="w-3.5 h-3.5 text-emerald-600" />
-                <span>Rapid WhatsApp Alert to On-Call</span>
-              </button>
-            </div>
-
-            <div className="text-[11px] text-[#445f73] font-medium hidden xl:flex items-center gap-1.5 bg-white/60 px-3 py-1 rounded-xl border border-white/80">
-              <ShieldCheck className="w-3.5 h-3.5 text-indigo-600" />
-              <span>Clinical Guideline: Lower MAP &le; 25% in hour 1 to preserve autoregulation</span>
-            </div>
-          </div>
 
           {/* WebSocket Replay Controls Bar */}
           <ReplayControlsBar
@@ -355,402 +356,530 @@ export default function DoctorTwinPage() {
             liveHr={currentHr}
           />
 
-          {/* Live Continuous Arterial Tonometry Oscilloscope with Calipers */}
-          <EcgOscilloscope heartRate={currentHr} isCrisis={isCrisis} height={84} />
+          {/* Full-Width Continuous Arterial Tonometry Ribbon (Pura lamba across screen) */}
+          <EcgOscilloscope
+            heartRate={currentHr}
+            isCrisis={isCrisis}
+            height={56}
+            className="w-full shadow-2xs"
+          />
 
-          {/* 3-Column Layout */}
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-5 items-start">
-            {/* Left Column: Digital Twin Biophysics & Gauge (4 cols) */}
-            <div className="lg:col-span-4 flex flex-col gap-5">
-              <GlassCard className="p-6 flex flex-col items-center border border-white/80">
-                <div className="w-full flex items-center justify-between mb-2">
-                  <span className="text-[11px] font-bold uppercase tracking-wider text-[#445f73]">
-                    Fused Biophysical Risk
-                  </span>
-                  <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[11px] bg-[#2FBF9B]/15 text-[#196C57] font-semibold">
-                    <span className="w-2 h-2 rounded-full bg-[#196C57] animate-pulse" />
-                    Telemetric Stream 1 Hz
-                  </span>
-                </div>
-
-                <RiskGauge value={currentRiskScore} tier={twin.risk_tier} />
-
-                <div className="w-full mt-4 p-3 rounded-xl bg-gradient-to-r from-[#e2f1ef]/60 to-[#cce2f8]/40 border border-white flex items-center justify-between text-[12px]">
-                  <span className="text-[#445f73] font-semibold">Warning Horizon Lead</span>
-                  <span className="font-mono font-bold text-[#111e1d] bg-white px-2 py-0.5 rounded-lg shadow-2xs">
-                    {twin.days_to_risk}
-                  </span>
-                </div>
-
-                {/* Windkessel Biophysics */}
-                <div className="w-full mt-5 flex flex-col gap-3">
-                  <div className="flex items-center justify-between">
-                    <span className="text-[11px] font-bold uppercase tracking-wider text-[#00666f]">
-                      3-Element Windkessel Biophysics
+          {/* 3-Column Layout: Perfectly Aligned Heights & Single-Scroll Cockpit */}
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-3.5 items-stretch">
+            {/* Card 1: Left Column (4 cols) - Digital Twin Biophysics & Windkessel Parameters */}
+            <div className="lg:col-span-4 flex flex-col h-full">
+              <GlassCard className="p-4 flex flex-col justify-between border border-white/80 shadow-xs h-full">
+                <div>
+                  {/* Header */}
+                  <div className="w-full flex items-center justify-between mb-2">
+                    <div className="flex items-center gap-2">
+                      <span className="w-2 h-2 rounded-full bg-teal-600 animate-pulse" />
+                      <span className="text-[11px] font-bold uppercase tracking-wider text-slate-700 font-mono">
+                        Fused Biophysical Risk
+                      </span>
+                    </div>
+                    <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full text-[10px] bg-emerald-50 text-emerald-800 font-bold border border-emerald-200/70 font-mono">
+                      STREAM 1 Hz
                     </span>
-                    <span className="text-[10px] font-mono font-semibold text-[#196C57]">ODE BIO-FIT</span>
                   </div>
 
-                  <div className="space-y-2 text-[12px]">
-                    <div className="flex items-center justify-between p-2.5 rounded-xl bg-white/70 border border-gray-100">
-                      <div>
-                        <span className="text-[#111e1d] font-semibold block">Peripheral Resistance (R_p)</span>
-                        <span className="text-[10px] text-[#445f73]">Vasoconstrictive tone</span>
+                  {/* Risk Gauge */}
+                  <div className="flex justify-center -my-1">
+                    <RiskGauge value={currentRiskScore} tier={twin.risk_tier} size={175} />
+                  </div>
+
+                  {/* Warning Horizon Lead Pill */}
+                  <div className="w-full mt-2 p-2 rounded-xl bg-slate-50/90 border border-slate-200/80 flex items-center justify-between text-[11.5px]">
+                    <span className="flex items-center gap-1.5 font-semibold text-slate-700">
+                      <Clock className="w-3.5 h-3.5 text-indigo-600" />
+                      Warning Horizon Lead
+                    </span>
+                    <span className="font-mono font-bold text-slate-900 bg-white px-2 py-0.5 rounded-md border border-slate-200 shadow-2xs tabular-nums text-[11px]">
+                      {twin.days_to_risk}
+                    </span>
+                  </div>
+
+                  {/* 3-Element Windkessel Biophysics */}
+                  <div className="w-full mt-3 flex flex-col gap-2">
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-1.5">
+                        <Activity className="w-3.5 h-3.5 text-teal-700" />
+                        <span className="text-[10.5px] font-bold uppercase tracking-wider text-teal-900 font-mono">
+                          3-Element Windkessel Biophysics
+                        </span>
                       </div>
-                      <span className="font-mono font-bold text-[#ba1a1a]">
-                        {twin.windkessel_params.r_peripheral} (+{twin.windkessel_params.r_peripheral_shift_percent}%)
+                      <span className="text-[9.5px] font-mono font-bold px-1.5 py-0.5 rounded bg-teal-50 text-teal-800 border border-teal-200/80">
+                        ODE BIO-FIT
                       </span>
                     </div>
 
-                    <div className="flex items-center justify-between p-2.5 rounded-xl bg-white/70 border border-gray-100">
-                      <div>
-                        <span className="text-[#111e1d] font-semibold block">Arterial Compliance (C_art)</span>
-                        <span className="text-[10px] text-[#445f73]">Aortic elastic reservoir</span>
+                    <div className="space-y-1.5 text-[11.5px]">
+                      {/* Param 1: Peripheral Resistance (R_p) */}
+                      <div className="p-2 rounded-xl bg-white/80 border border-slate-200/70 shadow-2xs flex flex-col gap-0.5">
+                        <div className="flex items-baseline justify-between">
+                          <span className="text-slate-900 font-bold text-[12px] tracking-tight">Peripheral Resistance (R_p)</span>
+                          <span className="font-mono font-bold text-[12.5px] text-slate-900 tabular-nums">
+                            {twin.windkessel_params.r_peripheral} <span className="text-[9.5px] font-medium text-slate-500">mmHg·s/mL</span>
+                          </span>
+                        </div>
+                        <div className="flex items-center justify-between text-[10px]">
+                          <span className="text-slate-500">Vasoconstrictive tone</span>
+                          <span className="font-mono font-bold px-1.5 py-0.2 rounded bg-red-50 text-red-700 border border-red-200/60 leading-none">
+                            +{twin.windkessel_params.r_peripheral_shift_percent}% Elevated Tone
+                          </span>
+                        </div>
                       </div>
-                      <span className="font-mono font-bold text-[#111e1d]">
-                        {twin.windkessel_params.c_arterial} mL/mmHg
-                      </span>
-                    </div>
 
-                    <div className="flex items-center justify-between p-2.5 rounded-xl bg-white/70 border border-gray-100">
-                      <div>
-                        <span className="text-[#111e1d] font-semibold block">Cardiac Output (Q_co)</span>
-                        <span className="text-[10px] text-[#445f73]">Stroke volume x HR</span>
+                      {/* Param 2: Arterial Compliance (C_art) */}
+                      <div className="p-2 rounded-xl bg-white/80 border border-slate-200/70 shadow-2xs flex flex-col gap-0.5">
+                        <div className="flex items-baseline justify-between">
+                          <span className="text-slate-900 font-bold text-[12px] tracking-tight">Arterial Compliance (C_art)</span>
+                          <span className="font-mono font-bold text-[12.5px] text-slate-900 tabular-nums">
+                            {twin.windkessel_params.c_arterial} <span className="text-[9.5px] font-medium text-slate-500">mL/mmHg</span>
+                          </span>
+                        </div>
+                        <div className="flex items-center justify-between text-[10px]">
+                          <span className="text-slate-500">Aortic elastic reservoir</span>
+                          <span className="font-mono font-bold px-1.5 py-0.2 rounded bg-blue-50 text-blue-700 border border-blue-200/60 leading-none">
+                            Stiffened Reserve
+                          </span>
+                        </div>
                       </div>
-                      <span className="font-mono font-bold text-[#111e1d]">
-                        {twin.windkessel_params.cardiac_output_l_min} L/min
-                      </span>
-                    </div>
 
-                    <div className="flex items-center justify-between p-2.5 rounded-xl bg-white/70 border border-gray-100">
-                      <div>
-                        <span className="text-[#111e1d] font-semibold block">In Silico Tolerance</span>
-                        <span className="text-[10px] text-[#445f73]">Calibration residual error</span>
+                      {/* Param 3: Cardiac Output (Q_co) */}
+                      <div className="p-2 rounded-xl bg-white/80 border border-slate-200/70 shadow-2xs flex flex-col gap-0.5">
+                        <div className="flex items-baseline justify-between">
+                          <span className="text-slate-900 font-bold text-[12px] tracking-tight">Cardiac Output (Q_co)</span>
+                          <span className="font-mono font-bold text-[12.5px] text-slate-900 tabular-nums">
+                            {twin.windkessel_params.cardiac_output_l_min} <span className="text-[9.5px] font-medium text-slate-500">L/min</span>
+                          </span>
+                        </div>
+                        <div className="flex items-center justify-between text-[10px]">
+                          <span className="text-slate-500">Stroke volume × Heart Rate</span>
+                          <span className="font-mono font-bold px-1.5 py-0.2 rounded bg-emerald-50 text-emerald-700 border border-emerald-200/60 leading-none">
+                            Active Perfusion
+                          </span>
+                        </div>
                       </div>
-                      <span className="font-mono font-bold text-[#196C57]">
-                        {twin.windkessel_params.biofit_tolerance_percent}% Nominal
-                      </span>
+
+                      {/* Param 4: In Silico Tolerance */}
+                      <div className="p-2 rounded-xl bg-white/80 border border-slate-200/70 shadow-2xs flex flex-col gap-0.5">
+                        <div className="flex items-baseline justify-between">
+                          <span className="text-slate-900 font-bold text-[12px] tracking-tight">In Silico Tolerance</span>
+                          <span className="font-mono font-bold text-[12.5px] text-emerald-700 tabular-nums">
+                            {twin.windkessel_params.biofit_tolerance_percent}% <span className="text-[9.5px] font-medium text-slate-500">Nominal</span>
+                          </span>
+                        </div>
+                        <div className="flex items-center justify-between text-[10px]">
+                          <span className="text-slate-500">Calibration residual error</span>
+                          <span className="font-mono font-bold px-1.5 py-0.2 rounded bg-emerald-50 text-emerald-700 border border-emerald-200/60 leading-none">
+                            ΔTDI 0.14 Validated
+                          </span>
+                        </div>
+                      </div>
                     </div>
                   </div>
                 </div>
 
                 {/* Multiscale Scales */}
-                <div className="w-full mt-5 pt-4 border-t border-[#bcc9cb]/30 flex flex-col gap-3">
-                  <div className="text-[12px]">
-                    <div className="flex justify-between font-semibold mb-1">
-                      <span className="text-[#ba1a1a]">Fast-Twin (Acute Crisis Stress)</span>
-                      <span className="font-bold text-[#ba1a1a] font-mono">{twin.scales.acute_twin_score}%</span>
-                    </div>
-                    <div className="w-full h-2 rounded-full bg-red-100 overflow-hidden mb-1">
-                      <div className="h-full bg-[#ba1a1a] rounded-full" style={{ width: `${twin.scales.acute_twin_score}%` }} />
-                    </div>
-                    <p className="text-[11px] text-[#445f73] leading-tight">{twin.scales.acute_twin_label}</p>
+                <div className="w-full mt-3 pt-2.5 border-t border-slate-200/70 flex flex-col gap-2">
+                  <div className="flex items-center justify-between text-[10px] font-bold uppercase tracking-wider text-slate-400 font-mono">
+                    <span>Multiscale Time-Lapse</span>
+                    <span>Stress Index</span>
                   </div>
 
-                  <div className="text-[12px]">
-                    <div className="flex justify-between font-semibold mb-1">
-                      <span className="text-[#1d5bf0]">Slow-Twin (Chronic Atherosclerotic Stiffening)</span>
-                      <span className="font-bold text-[#1d5bf0] font-mono">{twin.scales.chronic_twin_score}%</span>
+                  <div className="text-[11.5px] flex flex-col gap-0.5">
+                    <div className="flex justify-between items-baseline font-semibold">
+                      <span className="text-red-700 font-bold text-[11.5px]">Fast-Twin (Acute Crisis Stress)</span>
+                      <span className="font-bold text-red-700 font-mono text-[12px] tabular-nums">{twin.scales.acute_twin_score}%</span>
                     </div>
-                    <div className="w-full h-2 rounded-full bg-[#e5efff] overflow-hidden mb-1">
-                      <div className="h-full bg-[#1d5bf0] rounded-full" style={{ width: `${twin.scales.chronic_twin_score}%` }} />
+                    <div className="w-full h-1.5 rounded-full bg-red-100 overflow-hidden">
+                      <div className="h-full bg-red-600 rounded-full transition-all duration-500" style={{ width: `${twin.scales.acute_twin_score}%` }} />
                     </div>
-                    <p className="text-[11px] text-[#445f73] leading-tight">{twin.scales.chronic_twin_label}</p>
+                    <p className="text-[10px] text-slate-500 leading-snug">{twin.scales.acute_twin_label}</p>
+                  </div>
+
+                  <div className="text-[11.5px] flex flex-col gap-0.5">
+                    <div className="flex justify-between items-baseline font-semibold">
+                      <span className="text-indigo-700 font-bold text-[11.5px]">Slow-Twin (Chronic Vascular Stiffening)</span>
+                      <span className="font-bold text-indigo-700 font-mono text-[12px] tabular-nums">{twin.scales.chronic_twin_score}%</span>
+                    </div>
+                    <div className="w-full h-1.5 rounded-full bg-indigo-100 overflow-hidden">
+                      <div className="h-full bg-indigo-600 rounded-full transition-all duration-500" style={{ width: `${twin.scales.chronic_twin_score}%` }} />
+                    </div>
+                    <p className="text-[10px] text-slate-500 leading-snug">{twin.scales.chronic_twin_label}</p>
                   </div>
                 </div>
               </GlassCard>
             </div>
 
-            {/* Middle Column: Biomechanical Heart Viewer + Trajectory Forecast + Meds (5 cols) */}
-            <div className="lg:col-span-5 flex flex-col gap-5">
-              <CardiacModelViewer
-                sbp={currentSbp}
-                dbp={currentDbp}
-                heartRate={currentHr}
-                rp={twin.windkessel_params.r_peripheral}
-                cart={twin.windkessel_params.c_arterial}
-                riskScore={currentRiskScore}
-              />
-
-              {/* Trajectory Card */}
-              <GlassCard className="p-6 flex flex-col border border-white/80">
-                <div className="flex items-center justify-between mb-2">
-                  <div>
-                    <span className="text-[11px] font-bold uppercase tracking-wider text-indigo-600 flex items-center gap-1.5 font-mono">
-                      <Activity className="w-3.5 h-3.5" />
-                      In Silico Hemodynamics
-                    </span>
-                    <h2 className="text-[18px] font-bold text-[#111e1d]" style={{ fontFamily: 'Plus Jakarta Sans' }}>
-                      Blood Pressure Trajectory &amp; Crisis Horizon
-                    </h2>
-                  </div>
-                  <span className="text-[12px] font-mono font-bold text-[#ba1a1a] bg-red-100 border border-red-200 px-2.5 py-1 rounded-xl shadow-2xs">
-                    {predictions.forecast_peak_eta_text}
-                  </span>
-                </div>
-
-                <p className="text-[12px] text-[#445f73] mb-3">
-                  Live Streaming BP: <strong className="text-[#111e1d] font-mono">{currentSbp}/{currentDbp} mmHg</strong> &bull; Target alert marker: <strong className="text-[#ba1a1a]">crisis-range BP surge (&ge;180 mmHg)</strong>
-                </p>
-
-                <div className="w-full bg-white/85 rounded-2xl p-2.5 relative overflow-hidden border border-gray-100 shadow-2xs">
-                  <BPTrajectoryChart
-                    trajectory={predictions.trajectory}
-                    liveSbp={currentSbp}
-                    liveDbp={currentDbp}
-                  />
-                </div>
-
-                <div className="mt-3 flex items-center justify-between text-[11px] text-[#445f73]">
-                  <span className="flex items-center gap-1.5 font-medium">
-                    <span className="w-3 h-0.5 bg-indigo-600 inline-block rounded" />
-                    Observed Telemetry
-                  </span>
-                  <span className="flex items-center gap-1.5 font-medium">
-                    <span className="w-3 h-0.5 border-t-2 border-dashed border-[#ba1a1a] inline-block" />
-                    Windkessel Simulated Forecast
-                  </span>
-                  <span className="text-[#196C57] font-semibold bg-emerald-50 px-2 py-0.5 rounded font-mono">
-                    94.2% Confidence
-                  </span>
-                </div>
-              </GlassCard>
-
-              {/* Medications Adherence Card */}
-              <GlassCard className="p-6 flex flex-col border border-white/80">
-                <div className="flex items-center justify-between mb-1">
-                  <span className="text-[11px] font-bold uppercase tracking-wider text-indigo-600">
-                    Pharmacotherapy Adherence
-                  </span>
-                  <span className="text-[11px] text-[#445f73] font-medium">Recorded Inflow Gap</span>
-                </div>
-                <h3 className="text-[16px] font-bold text-[#111e1d] mb-3" style={{ fontFamily: 'Plus Jakarta Sans' }}>
-                  Current Regimen &amp; Dosing Telemetry
-                </h3>
-
-                <div className="space-y-3">
-                  {patient.medications.map((med) => {
-                    const isPoor = med.adherence_score < 0.7;
-
-                    return (
-                      <div key={med.id} className="p-3.5 rounded-2xl bg-white/70 border border-gray-100 flex items-center justify-between shadow-2xs">
-                        <div className="flex items-center gap-3">
-                          <div className={`w-9 h-9 rounded-xl flex items-center justify-center font-bold ${
-                            isPoor ? 'bg-red-100 text-[#ba1a1a]' : 'bg-indigo-50 text-indigo-600'
-                          }`}>
-                            <Pill className="w-5 h-5" />
-                          </div>
-                          <div className="flex flex-col">
-                            <span className="text-[13px] font-bold text-[#111e1d]">{med.name} {med.dosage}</span>
-                            <span className="text-[11px] text-[#445f73]">{med.frequency} &bull; Last: {new Date(med.last_taken_time).toLocaleDateString()}</span>
-                          </div>
-                        </div>
-
-                        <div className="flex flex-col items-end">
-                          <span className={`text-[12px] font-bold font-mono ${isPoor ? 'text-[#ba1a1a]' : 'text-[#196C57]'}`}>
-                            {Math.round(med.adherence_score * 100)}% Adherence
-                          </span>
-                          {med.omission_interval_hours > 0 && (
-                            <span className="text-[10px] text-[#ba1a1a] font-semibold bg-red-50 px-2 py-0.5 rounded-full mt-0.5">
-                              ~{med.omission_interval_hours}h gap omission
-                            </span>
-                          )}
-                        </div>
-                      </div>
-                    );
-                  })}
-                </div>
-              </GlassCard>
-            </div>
-
-            {/* Right Column: Alerts Deck & Clinical Actions (3 cols) */}
-            <div className="lg:col-span-3 flex flex-col gap-5">
-              <GlassCard className="p-6 flex flex-col border border-white/80">
-                <div className="flex items-center justify-between mb-4">
-                  <h3 className="text-[16px] font-bold text-[#111e1d]" style={{ fontFamily: 'Plus Jakarta Sans' }}>
-                    Clinical Alert Deck
-                  </h3>
-                  <span className={`px-2.5 py-0.5 rounded-full text-[11px] font-bold font-mono ${
-                    alerts.some((a) => a.status === 'ACTIVE')
-                      ? 'bg-red-100 text-[#ba1a1a]'
-                      : 'bg-emerald-100 text-emerald-800'
-                  }`}>
-                    {alerts.filter((a) => a.status === 'ACTIVE').length} Active
-                  </span>
-                </div>
-
-                {actionNotice && (
-                  <div className={`p-3.5 mb-3 rounded-2xl text-[12px] flex flex-col gap-1 border shadow-xs animate-in fade-in duration-200 ${
-                    actionNotice.type === 'ack'
-                      ? 'bg-emerald-50 border-emerald-200 text-emerald-900'
-                      : 'bg-purple-50 border-purple-200 text-purple-900'
-                  }`}>
-                    <div className="flex items-center justify-between font-bold">
-                      <span className="flex items-center gap-1.5">
-                        <CheckCircle2 className="w-4 h-4" />
-                        {actionNotice.title}
+            {/* Card 2: Middle Column (5 cols) - In Silico Hemodynamics & Biomechanical Chamber */}
+            <div className="lg:col-span-5 flex flex-col h-full">
+              <GlassCard className="p-4 flex flex-col justify-between border border-white/80 shadow-xs h-full">
+                <div>
+                  {/* Header with Segmented View Switcher */}
+                  <div className="flex items-center justify-between mb-2">
+                    <div>
+                      <span className="text-[10.5px] font-bold uppercase tracking-wider text-indigo-600 flex items-center gap-1 font-mono">
+                        <Activity className="w-3.5 h-3.5" />
+                        In Silico Hemodynamics
                       </span>
+                      <h2 className="text-[16px] font-bold text-slate-900 leading-tight" style={{ fontFamily: 'Plus Jakarta Sans' }}>
+                        Biomechanical Chamber &amp; Trajectory
+                      </h2>
+                    </div>
+
+                    {/* Segmented Controls */}
+                    <div className="flex items-center gap-0.5 bg-slate-100/90 p-0.5 rounded-lg border border-slate-200">
                       <button
-                        onClick={() => setActionNotice(null)}
-                        className="text-[#445f73] hover:text-[#111e1d] font-bold"
+                        onClick={() => setCenterTab('split')}
+                        className={`px-2 py-0.5 rounded-md text-[10.5px] font-bold transition-all cursor-pointer ${
+                          centerTab === 'split' ? 'bg-indigo-600 text-white shadow-2xs' : 'text-slate-600 hover:text-slate-900'
+                        }`}
                         type="button"
                       >
-                        <X className="w-4 h-4" />
+                        Split
+                      </button>
+                      <button
+                        onClick={() => setCenterTab('chamber')}
+                        className={`px-2 py-0.5 rounded-md text-[10.5px] font-bold transition-all cursor-pointer ${
+                          centerTab === 'chamber' ? 'bg-indigo-600 text-white shadow-2xs' : 'text-slate-600 hover:text-slate-900'
+                        }`}
+                        type="button"
+                      >
+                        Chamber
+                      </button>
+                      <button
+                        onClick={() => setCenterTab('trajectory')}
+                        className={`px-2 py-0.5 rounded-md text-[10.5px] font-bold transition-all cursor-pointer ${
+                          centerTab === 'trajectory' ? 'bg-indigo-600 text-white shadow-2xs' : 'text-slate-600 hover:text-slate-900'
+                        }`}
+                        type="button"
+                      >
+                        Forecast
                       </button>
                     </div>
-                    <p className="text-[11px] leading-tight opacity-90">{actionNotice.detail}</p>
                   </div>
-                )}
 
-                <div className="space-y-3">
-                  {alerts.map((alt) => (
-                    <div
-                      key={alt.id}
-                      className={`p-3.5 rounded-2xl border flex flex-col gap-2 transition-all ${
-                        alt.status === 'ESCALATED'
-                          ? 'border-purple-200 bg-purple-50/70'
-                          : alt.status === 'ACKNOWLEDGED'
-                          ? 'border-emerald-200 bg-emerald-50/50'
-                          : 'border-red-200 bg-red-50/60 shadow-xs'
-                      }`}
-                    >
-                      <div className="flex items-center justify-between">
-                        <div className="flex items-center gap-1.5">
-                          <span className={`text-[10px] font-bold uppercase tracking-wider font-mono px-1.5 py-0.5 rounded text-white ${
-                            alt.status === 'ESCALATED'
-                              ? 'bg-purple-700'
-                              : alt.status === 'ACKNOWLEDGED'
-                              ? 'bg-indigo-600'
-                              : 'bg-[#ba1a1a]'
-                          }`}>
-                            {alt.tier}
+                  {/* Body based on view mode */}
+                  {centerTab === 'split' && (
+                    <div className="flex flex-col gap-2">
+                      <CardiacModelViewer
+                        sbp={currentSbp}
+                        dbp={currentDbp}
+                        heartRate={currentHr}
+                        rp={twin.windkessel_params.r_peripheral}
+                        cart={twin.windkessel_params.c_arterial}
+                        riskScore={currentRiskScore}
+                        hideHeader={true}
+                        compact={true}
+                      />
+
+                      <div className="w-full h-px bg-slate-200/70" />
+
+                      <div>
+                        <div className="flex items-center justify-between text-[11px] mb-1">
+                          <span className="text-slate-500">
+                            Live BP: <strong className="font-mono text-slate-900">{currentSbp}/{currentDbp}</strong> &bull; Target alert: <strong className="text-red-700 font-semibold">&ge;180 mmHg</strong>
                           </span>
-                          <span className={`text-[10px] px-2 py-0.5 rounded-full font-bold uppercase font-mono ${
-                            alt.status === 'ESCALATED'
-                              ? 'bg-purple-200 text-purple-900'
-                              : alt.status === 'ACKNOWLEDGED'
-                              ? 'bg-emerald-200 text-emerald-900'
-                              : 'bg-red-200 text-red-900'
-                          }`}>
-                            {alt.status}
+                          <span className="font-mono font-bold text-red-700 bg-red-50 border border-red-200 px-1.5 py-0.2 rounded text-[10.5px]">
+                            {predictions.forecast_peak_eta_text}
                           </span>
                         </div>
-                        <span className="text-[11px] font-mono text-[#445f73] font-semibold">{alt.eta_to_threshold}</span>
+                        <div className="w-full bg-white/85 rounded-xl p-1.5 border border-slate-200/60 shadow-2xs">
+                          <BPTrajectoryChart
+                            trajectory={predictions.trajectory}
+                            liveSbp={currentSbp}
+                            liveDbp={currentDbp}
+                          />
+                        </div>
                       </div>
+                    </div>
+                  )}
 
-                      <h4 className="text-[13px] font-bold text-[#111e1d] leading-snug">
-                        {alt.primary_concern}
-                      </h4>
+                  {centerTab === 'chamber' && (
+                    <div className="mt-1">
+                      <CardiacModelViewer
+                        sbp={currentSbp}
+                        dbp={currentDbp}
+                        heartRate={currentHr}
+                        rp={twin.windkessel_params.r_peripheral}
+                        cart={twin.windkessel_params.c_arterial}
+                        riskScore={currentRiskScore}
+                        hideHeader={true}
+                      />
+                    </div>
+                  )}
 
-                      <p className="text-[11px] text-[#445f73] leading-relaxed">
-                        {alt.trigger_summary}
-                      </p>
-
-                      {alt.escalation_protocol && (
-                        <div className="p-2.5 rounded-xl bg-purple-100/80 text-[11px] text-purple-950 font-medium border border-purple-200">
-                          <div className="font-bold text-purple-900 flex items-center justify-between">
-                            <span>🚨 Dispatched to Cath Lab Triage</span>
-                            <span className="font-mono text-[10px] bg-purple-200 px-1.5 py-0.5 rounded">STAT QUEUE</span>
-                          </div>
-                          <p className="mt-0.5 text-purple-900 font-semibold">{alt.escalation_protocol}</p>
-                          <div className="mt-1 flex items-center justify-between text-[10px] text-purple-900">
-                            <span>Recipient: Cath Lab CCU Coordinator</span>
-                            <Link to="/doctor/cath-lab-triage" className="font-bold underline hover:text-purple-700">
-                              View Suite Queue &rarr;
-                            </Link>
-                          </div>
-                        </div>
-                      )}
-
-                      {alt.status === 'ACKNOWLEDGED' && (
-                        <div className="p-2.5 rounded-xl bg-emerald-50 text-[11px] text-emerald-950 font-medium border border-emerald-200">
-                          <div className="font-bold text-emerald-800 flex items-center justify-between">
-                            <span className="flex items-center gap-1">
-                              <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600" />
-                              Reviewed by Dr. A. Sharma
-                            </span>
-                            <span className="font-mono text-[10px] bg-emerald-100 text-emerald-800 px-1.5 py-0.5 rounded">
-                              AUDIT LOGGED
-                            </span>
-                          </div>
-                          <div className="mt-1 flex items-center justify-between text-[10px] text-[#445f73]">
-                            <span>Broadcast to: Central CCU Nursing Desk</span>
-                            <Link to="/doctor/nursing-desk" className="font-bold text-emerald-800 underline hover:text-emerald-600">
-                              View Ward Desk &rarr;
-                            </Link>
-                          </div>
-                        </div>
-                      )}
-
-                      <div className="pt-2 border-t border-black/5 flex items-center justify-between text-[11px]">
-                        <span className={alt.status === 'ESCALATED' ? 'text-purple-800 font-semibold' : 'text-[#ba1a1a] font-semibold'}>
-                          {alt.recommended_action}
+                  {centerTab === 'trajectory' && (
+                    <div className="flex flex-col gap-2 mt-1">
+                      <div className="flex items-center justify-between text-[11.5px]">
+                        <span className="text-slate-500">
+                          Live Inflow: <strong className="font-mono text-slate-900">{currentSbp}/{currentDbp} mmHg</strong> &bull; Crisis threshold marker: <strong className="text-red-700 font-semibold">&ge;180 mmHg</strong>
+                        </span>
+                        <span className="font-mono font-bold text-red-700 bg-red-100 border border-red-200 px-2 py-0.5 rounded-lg text-[11px]">
+                          {predictions.forecast_peak_eta_text}
                         </span>
                       </div>
+                      <div className="w-full bg-white/85 rounded-xl p-2 border border-slate-200/60 shadow-2xs">
+                        <BPTrajectoryChart
+                          trajectory={predictions.trajectory}
+                          liveSbp={currentSbp}
+                          liveDbp={currentDbp}
+                        />
+                      </div>
                     </div>
-                  ))}
+                  )}
                 </div>
 
-                {/* Bottom Action Buttons */}
-                <div className="mt-4 pt-4 border-t border-[#bcc9cb]/30 flex flex-col gap-2.5">
-                  <button
-                    onClick={async () => {
-                      const activeAlt = alerts.find((a) => a.status === 'ACTIVE') || alerts[0];
-                      if (!activeAlt || acknowledging) return;
-                      setAcknowledging(true);
-                      try {
-                        const res = await acknowledgeAlert(patientId, activeAlt.id);
-                        await alertsQuery.refetch();
-                        setActionNotice({
-                          type: 'ack',
-                          title: 'Alert Acknowledged by Dr. A. Sharma',
-                          detail: res.message || `Transmitted to Central CCU Nursing Desk. Audio alarm silenced. Audit hash sealed in CDSCO Class B Vault by Dr. A. Sharma.`,
-                        });
-                      } finally {
-                        setAcknowledging(false);
-                      }
-                    }}
-                    disabled={acknowledging || alerts.every((a) => a.status === 'ACKNOWLEDGED')}
-                    className={`w-full py-2.5 rounded-xl font-bold text-[13px] shadow-sm transition-all flex items-center justify-center gap-1.5 active:scale-98 ${
-                      alerts.every((a) => a.status === 'ACKNOWLEDGED')
-                        ? 'bg-emerald-600 text-white cursor-default'
-                        : 'bg-indigo-600 hover:bg-indigo-700 text-white'
-                    }`}
-                    type="button"
-                  >
-                    <Check className="w-4 h-4" />
-                    {acknowledging
-                      ? 'Acknowledging...'
-                      : alerts.every((a) => a.status === 'ACKNOWLEDGED')
-                      ? 'Alert Acknowledged'
-                      : 'Acknowledge Alert'}
-                  </button>
+                {/* Bottom Legend */}
+                <div className="mt-2 pt-2 border-t border-slate-200/70 flex items-center justify-between text-[10.5px] text-slate-500">
+                  <span className="flex items-center gap-1 font-medium">
+                    <span className="w-2.5 h-0.5 bg-indigo-600 inline-block rounded" />
+                    Observed Telemetry
+                  </span>
+                  <span className="flex items-center gap-1 font-medium">
+                    <span className="w-2.5 h-0.5 border-t border-dashed border-red-600 inline-block" />
+                    Windkessel Forecast
+                  </span>
+                  <span className="text-emerald-800 font-semibold bg-emerald-50 px-1.5 py-0.2 rounded font-mono border border-emerald-200/60 text-[10px]">
+                    94.2% Conf
+                  </span>
+                </div>
+              </GlassCard>
+            </div>
 
-                  <button
-                    onClick={() => setShowEscalateModal(true)}
-                    className="w-full py-2.5 rounded-xl bg-white/80 hover:bg-white text-[#111e1d] font-semibold text-[13px] transition-all shadow-2xs border border-gray-200 flex items-center justify-center gap-1.5 hover:text-purple-800 hover:border-purple-300 active:scale-98"
-                    type="button"
-                  >
-                    <ShieldAlert className="w-4 h-4 text-purple-700" />
-                    Escalate to Cath-Triage
-                  </button>
+            {/* Card 3: Right Column (3 cols) - Clinical Decision Deck & Medications */}
+            <div className="lg:col-span-3 flex flex-col h-full">
+              <GlassCard className="p-4 flex flex-col justify-between border border-white/80 shadow-xs h-full">
+                <div>
+                  {/* Header with Segmented Alert vs Meds Switcher */}
+                  <div className="flex items-center justify-between mb-2">
+                    <h3 className="text-[16px] font-bold text-slate-900" style={{ fontFamily: 'Plus Jakarta Sans' }}>
+                      Clinical Action Deck
+                    </h3>
 
-                  {/* Routing Architecture Hint */}
-                  <div className="p-2.5 rounded-xl bg-gray-50/80 border border-gray-200/60 text-[10px] text-[#445f73] leading-relaxed">
-                    <span className="font-bold text-[#111e1d]">Live Recipient Dashboards:</span>
-                    <div className="mt-1 flex flex-wrap items-center gap-2">
-                      <Link to="/doctor/nursing-desk" className="font-bold text-indigo-600 hover:underline flex items-center gap-0.5">
-                        <span>Central CCU Nursing Desk</span>
-                      </Link>
-                      <span>&bull;</span>
-                      <Link to="/doctor/cath-lab-triage" className="font-bold text-purple-800 hover:underline flex items-center gap-0.5">
-                        <span>Cath Lab Triage</span>
-                      </Link>
-                      <span>&bull;</span>
-                      <Link to="/doctor/audit-vault" className="font-bold text-[#445f73] hover:underline flex items-center gap-0.5">
-                        <span>CDSCO Audit</span>
-                      </Link>
+                    <div className="flex items-center gap-0.5 bg-slate-100/90 p-0.5 rounded-lg border border-slate-200">
+                      <button
+                        onClick={() => setRightTab('alerts')}
+                        className={`px-2 py-0.5 rounded-md text-[10.5px] font-bold transition-all cursor-pointer ${
+                          rightTab === 'alerts' ? 'bg-indigo-600 text-white shadow-2xs' : 'text-slate-600 hover:text-slate-900'
+                        }`}
+                        type="button"
+                      >
+                        Alerts ({alerts.filter((a) => a.status === 'ACTIVE').length})
+                      </button>
+                      <button
+                        onClick={() => setRightTab('meds')}
+                        className={`px-2 py-0.5 rounded-md text-[10.5px] font-bold transition-all cursor-pointer ${
+                          rightTab === 'meds' ? 'bg-indigo-600 text-white shadow-2xs' : 'text-slate-600 hover:text-slate-900'
+                        }`}
+                        type="button"
+                      >
+                        Meds ({patient.medications.length})
+                      </button>
                     </div>
+                  </div>
+
+                  {/* Body: Alerts Tab */}
+                  {rightTab === 'alerts' && (
+                    <div className="flex flex-col gap-2">
+                      {actionNotice && (
+                        <div className={`p-2.5 rounded-xl text-[11.5px] flex flex-col gap-0.5 border shadow-2xs animate-in fade-in duration-200 ${
+                          actionNotice.type === 'ack'
+                            ? 'bg-emerald-50 border-emerald-200 text-emerald-900'
+                            : 'bg-purple-50 border-purple-200 text-purple-900'
+                        }`}>
+                          <div className="flex items-center justify-between font-bold">
+                            <span className="flex items-center gap-1.5">
+                              <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600" />
+                              {actionNotice.title}
+                            </span>
+                            <button
+                              onClick={() => setActionNotice(null)}
+                              className="text-slate-400 hover:text-slate-700 font-bold"
+                              type="button"
+                            >
+                              <X className="w-3.5 h-3.5" />
+                            </button>
+                          </div>
+                          <p className="text-[10.5px] leading-tight opacity-90">{actionNotice.detail}</p>
+                        </div>
+                      )}
+
+                      <div className="space-y-2 max-h-[310px] overflow-y-auto pr-1">
+                        {alerts.map((alt) => (
+                          <div
+                            key={alt.id}
+                            className={`p-2.5 rounded-xl border flex flex-col gap-1.5 transition-all ${
+                              alt.status === 'ESCALATED'
+                                ? 'border-purple-200 bg-purple-50/70'
+                                : alt.status === 'ACKNOWLEDGED'
+                                ? 'border-emerald-200 bg-emerald-50/50'
+                                : 'border-red-200 bg-red-50/60 shadow-2xs'
+                            }`}
+                          >
+                            <div className="flex items-center justify-between">
+                              <div className="flex items-center gap-1">
+                                <span className={`text-[9.5px] font-bold uppercase tracking-wider font-mono px-1.5 py-0.2 rounded text-white ${
+                                  alt.status === 'ESCALATED'
+                                    ? 'bg-purple-700'
+                                    : alt.status === 'ACKNOWLEDGED'
+                                    ? 'bg-indigo-600'
+                                    : 'bg-red-700'
+                                }`}>
+                                  {alt.tier}
+                                </span>
+                                <span className={`text-[9.5px] px-1.5 py-0.2 rounded-full font-bold uppercase font-mono ${
+                                  alt.status === 'ESCALATED'
+                                    ? 'bg-purple-200 text-purple-900'
+                                    : alt.status === 'ACKNOWLEDGED'
+                                    ? 'bg-emerald-200 text-emerald-900'
+                                    : 'bg-red-200 text-red-900'
+                                }`}>
+                                  {alt.status}
+                                </span>
+                              </div>
+                              <span className="text-[10px] font-mono text-slate-500 font-semibold">{alt.eta_to_threshold}</span>
+                            </div>
+
+                            <h4 className="text-[12px] font-bold text-slate-900 leading-snug">
+                              {alt.primary_concern}
+                            </h4>
+
+                            <p className="text-[10.5px] text-slate-500 leading-relaxed">
+                              {alt.trigger_summary}
+                            </p>
+
+                            {alt.escalation_protocol && (
+                              <div className="p-2 rounded-lg bg-purple-100/80 text-[10.5px] text-purple-950 font-medium border border-purple-200">
+                                <div className="font-bold text-purple-900 flex items-center justify-between">
+                                  <span>🚨 Cath Lab Priority</span>
+                                  <span className="font-mono text-[9.5px] bg-purple-200 px-1 py-0.2 rounded">STAT</span>
+                                </div>
+                                <p className="mt-0.5 text-purple-900 font-semibold leading-tight">{alt.escalation_protocol}</p>
+                              </div>
+                            )}
+
+                            {alt.status === 'ACKNOWLEDGED' && (
+                              <div className="p-2 rounded-lg bg-emerald-50 text-[10.5px] text-emerald-950 font-medium border border-emerald-200">
+                                <div className="font-bold text-emerald-800 flex items-center gap-1">
+                                  <CheckCircle2 className="w-3 h-3 text-emerald-600" />
+                                  Reviewed &amp; Acknowledged
+                                </div>
+                              </div>
+                            )}
+
+                            <div className="pt-1 border-t border-black/5 flex items-center justify-between text-[10px]">
+                              <span className={alt.status === 'ESCALATED' ? 'text-purple-800 font-semibold' : 'text-red-700 font-semibold'}>
+                                {alt.recommended_action}
+                              </span>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Body: Meds Tab */}
+                  {rightTab === 'meds' && (
+                    <div className="flex flex-col gap-2 max-h-[380px] overflow-y-auto pr-1">
+                      <div className="text-[11px] text-slate-500 mb-0.5">
+                        Inpatient pharmacotherapy regimen &amp; scheduled adherence:
+                      </div>
+                      {patient.medications.map((med) => {
+                        const isPoor = med.adherence_score < 0.7;
+
+                        return (
+                          <div key={med.id} className="p-2.5 rounded-xl bg-white/70 border border-slate-200/60 flex items-center justify-between shadow-2xs">
+                            <div className="flex items-center gap-2">
+                              <div className={`w-7 h-7 rounded-lg flex items-center justify-center font-bold shrink-0 ${
+                                isPoor ? 'bg-red-100 text-red-700' : 'bg-indigo-50 text-indigo-600'
+                              }`}>
+                                <Pill className="w-3.5 h-3.5" />
+                              </div>
+                              <div className="flex flex-col">
+                                <span className="text-[12px] font-bold text-slate-900 leading-tight">{med.name} {med.dosage}</span>
+                                <span className="text-[10px] text-slate-500 leading-tight mt-0.5">{med.frequency}</span>
+                              </div>
+                            </div>
+
+                            <div className="flex flex-col items-end">
+                              <span className={`text-[11px] font-bold font-mono ${isPoor ? 'text-red-700' : 'text-emerald-700'}`}>
+                                {Math.round(med.adherence_score * 100)}%
+                              </span>
+                              {med.omission_interval_hours > 0 && (
+                                <span className="text-[9px] text-red-700 font-semibold bg-red-50 px-1.5 py-0.2 rounded-full mt-0.5 border border-red-200/60">
+                                  ~{med.omission_interval_hours}h gap
+                                </span>
+                              )}
+                            </div>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  )}
+                </div>
+
+                {/* Bottom Action Buttons (pinned at bottom of Card 3) */}
+                <div className="mt-3 pt-2.5 border-t border-slate-200/70 flex flex-col gap-1.5">
+                  <div className="grid grid-cols-2 gap-1.5">
+                    <button
+                      onClick={async () => {
+                        const activeAlt = alerts.find((a) => a.status === 'ACTIVE') || alerts[0];
+                        if (!activeAlt || acknowledging) return;
+                        setAcknowledging(true);
+                        try {
+                          const res = await acknowledgeAlert(patientId, activeAlt.id);
+                          await alertsQuery.refetch();
+                          setActionNotice({
+                            type: 'ack',
+                            title: 'Alert Acknowledged by Dr. A. Sharma',
+                            detail: res.message || `Transmitted to Central CCU Nursing Desk. Audio alarm silenced. Audit hash sealed in CDSCO Class B Vault by Dr. A. Sharma.`,
+                          });
+                        } finally {
+                          setAcknowledging(false);
+                        }
+                      }}
+                      disabled={acknowledging || alerts.every((a) => a.status === 'ACKNOWLEDGED')}
+                      className={`py-1.5 px-2 rounded-lg font-bold text-[11.5px] shadow-xs transition-all flex items-center justify-center gap-1 active:scale-98 cursor-pointer ${
+                        alerts.every((a) => a.status === 'ACKNOWLEDGED')
+                          ? 'bg-emerald-600 text-white cursor-default'
+                          : 'bg-indigo-600 hover:bg-indigo-700 text-white'
+                      }`}
+                      type="button"
+                    >
+                      <Check className="w-3.5 h-3.5" />
+                      {acknowledging
+                        ? 'Ack...'
+                        : alerts.every((a) => a.status === 'ACKNOWLEDGED')
+                        ? 'Acknowledged'
+                        : 'Acknowledge'}
+                    </button>
+
+                    <button
+                      onClick={() => setShowEscalateModal(true)}
+                      className="py-1.5 px-2 rounded-lg bg-white/90 hover:bg-white text-slate-800 font-semibold text-[11.5px] transition-all shadow-2xs border border-slate-200 flex items-center justify-center gap-1 hover:text-purple-800 hover:border-purple-300 active:scale-98 cursor-pointer"
+                      type="button"
+                    >
+                      <ShieldAlert className="w-3.5 h-3.5 text-purple-700" />
+                      Cath-Triage
+                    </button>
+                  </div>
+
+                  {/* Routing Links */}
+                  <div className="flex items-center justify-between text-[9.5px] text-slate-500 pt-0.5 px-0.5">
+                    <Link to="/doctor/nursing-desk" className="font-bold text-indigo-600 hover:underline">
+                      Nursing Desk &rarr;
+                    </Link>
+                    <span>&bull;</span>
+                    <Link to="/doctor/cath-lab-triage" className="font-bold text-purple-800 hover:underline">
+                      Cath Lab &rarr;
+                    </Link>
+                    <span>&bull;</span>
+                    <Link to="/doctor/audit-vault" className="font-bold text-slate-600 hover:underline">
+                      Audit Vault
+                    </Link>
                   </div>
                 </div>
               </GlassCard>
@@ -794,7 +923,7 @@ export default function DoctorTwinPage() {
 
           {/* Escalation Modal Dialog */}
           {showEscalateModal && (
-            <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-md p-4">
+            <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/30 backdrop-blur-sm p-4">
               <div
                 className="w-full max-w-lg p-6 rounded-3xl flex flex-col gap-4 relative animate-in fade-in zoom-in-95 duration-200 border border-white"
                 style={{
